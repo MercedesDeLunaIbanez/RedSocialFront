@@ -21,7 +21,10 @@ export default function MyPublication() {
       {items.length === 0 && <p>No hay publicaciones disponibles.</p>}
 
 
-      {items.map((pub) => (
+      {items
+      .slice() // hacemos copia del array
+      .sort((a, b) => new Date(b.createDate) - new Date(a.createDate)) // más reciente primero
+      .map((pub) => (
         <GetPublication
           key={pub.id}
           authorName={pub.username}
