@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "../api/auth";
 import { useAuth } from "../context/useAuth";
+import { Link } from "react-router-dom";
 
 
 export default function LoginForm() {
@@ -14,7 +15,7 @@ export default function LoginForm() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       // Suponemos que la API devuelve { token, user }
-      login(data.access_token, data.user);
+      login(data.access_token, { username: data.username });
     },
   });
 
@@ -26,10 +27,9 @@ export default function LoginForm() {
 
 
   return (
+    <>
     <form onSubmit={handleSubmit}>
       <h3>Iniciar sesión</h3>
-
-
       <input
         type="text"
         placeholder="Username"
@@ -52,6 +52,12 @@ export default function LoginForm() {
       {mutation.isError && (
         <p style={{ color: "red" }}>{mutation.error.message}</p>
       )}
+      
     </form>
+
+    <p>
+        ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
+    </p>
+    </>
   );
 }
