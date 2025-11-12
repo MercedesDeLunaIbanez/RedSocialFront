@@ -26,7 +26,8 @@ export default function MyPublication() {
       .sort((a, b) => new Date(b.createDate) - new Date(a.createDate)) // más reciente primero
       .map((pub) => (
         <GetPublication
-          key={pub.id}
+          key={pub.publicationId}
+          id={pub.publicationId}
           authorName={pub.username}
           text={pub.text}
           createDate={pub.createDate}
