@@ -1,6 +1,15 @@
 import { usePagination } from "../hooks/usePagination";
 import GetPublication from "./GetPublication";
 
+/**
+ * Muestra una lista de todas las publicaciones con paginación.
+ * La lista se ordena por fecha de creación (más reciente primero).
+ * La lista se puede paginar con botones "Anterior" y "Siguiente".
+ * Si no hay publicaciones, se muestra un mensaje "No hay publicaciones disponibles.".
+ * Si ocurre un error, se muestra un mensaje de error en rojo.
+ * La lista se actualiza automáticamente cuando se crea o se borra una publicación.
+ * @returns {JSX.Element} Un componente que muestra la lista de publicaciones con paginación.
+*/
 export default function PublicationList() {
   const { items, page, totalPages, isLoading, isError, error, nextPage, prevPage } =
     usePagination("/publications/", 5); // endpoint y tamaño de página
