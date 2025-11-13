@@ -13,7 +13,6 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <CreatePublication />
       <main style={{ padding: 20 }}>
         <h3>Publicaciones de tus seguidos</h3>
         <PublicationFollowing />
