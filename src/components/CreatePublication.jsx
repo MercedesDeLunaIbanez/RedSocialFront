@@ -1,37 +1,44 @@
 import { useState } from "react";
 import { useAuth } from "../context/useAuth";
 import { apiFetch } from "../api/client";
-import { useQueryClient } from "@tanstack/react-query"; // ✅ IMPORTANTE
+import { useQueryClient } from "@tanstack/react-query";
 
-
-export default function CreatePublication() {  // ya NO necesitas onNewPublication
+/**
+ * Componente para crear una nueva publicación.
+ * 
+ * @returns {JSX.Element} Un formulario para crear una nueva publicación.
+ */
+export default function CreatePublication() {  
   const { user } = useAuth();
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  const queryClient = useQueryClient(); 
 
-  const queryClient = useQueryClient(); // ✅
-
-
+  // Comprobamos si el usuario esta logueado
   if (!user) {
-    return <p>Debes estar logueado para crear una publicación.</p>;
+    return <p className="error-text">Debes estar logueado para crear una publicación.</p>;
   }
 
-
+  /**
+   * Función para manejar el envío del formulario de creación de publicación.
+   * 
+   * Comprueba que el texto no esté vacío, y si es así, muestra un mensaje de error.
+   * Si el texto es válido, envía una petición POST a la API para crear una nueva publicación.
+   * Después de la petición, invalida la caché de la lista de publicaciones para que se vuelva a recargar.
+   * Si ocurre un error, muestra un mensaje de error.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
-
 
     if (!text.trim()) {
       setError("La publicación no puede estar vacía.");
       return;
     }
 
-
     setIsSubmitting(true);
     setError(null);
-
 
     try {
       await apiFetch("/publications/", {
@@ -39,13 +46,10 @@ export default function CreatePublication() {  // ya NO necesitas onNewPublicati
         body: JSON.stringify({ text }),
       });
 
-
       setText("");
 
-
-      // ✅ recarga automática de la lista
+      // recarga automática de la lista
       queryClient.invalidateQueries(["/publications/"]);
-
 
     } catch (err) {
       setError(err.message || "Error al crear la publicación.");
@@ -54,49 +58,27 @@ export default function CreatePublication() {  // ya NO necesitas onNewPublicati
     }
   };
 
-
   return (
-    <div style={{
-      maxWidth: "600px",
-      margin: "20px auto",
-      padding: "15px",
-      backgroundColor: "#f9f9f9",
-      borderRadius: "10px",
-      boxShadow: "0 0 8px rgba(0,0,0,0.1)",
-    }}>
-      <h3>Crea una nueva publicación</h3>
+    <div className="create-publication-card">
+      <h3 className="create-publication-title">Crea una nueva publicación</h3>
       <form onSubmit={handleSubmit}>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="¿Qué estás pensando?"
           rows={4}
-          style={{
-            width: "100%",
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            resize: "none",
-          }}
+          className="create-publication-textarea"
           disabled={isSubmitting}
         />
         <button
           type="submit"
           disabled={isSubmitting}
-          style={{
-            marginTop: "10px",
-            padding: "10px 15px",
-            backgroundColor: "#2196f3",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
+          className="create-publication-button"
         >
           {isSubmitting ? "Publicando..." : "Publicar"}
         </button>
       </form>
-      {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+      {error && <p className="error-text">{error}</p>}
     </div>
   );
 }

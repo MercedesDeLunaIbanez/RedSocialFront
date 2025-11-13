@@ -5,6 +5,10 @@ import PublicationFollowing from "../components/PublicationFollowing";
 
 
 
+/**
+ * Página principal de la aplicación que muestra el formulario para crear una publicación
+ * y una lista de publicaciones de los usuarios que se sigue.
+ */
 export default function HomePage() {
   return (
     <>

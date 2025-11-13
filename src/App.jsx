@@ -1,4 +1,3 @@
-// src/App.jsx
 // Aquí configuramos la navegación general de la app.
 // Dependemos del contexto de autenticación para saber si el usuario tiene token.
 
@@ -49,9 +48,6 @@ export default function App() {
  */
 function AuthPage() {
   return (
-    <main style={{ maxWidth: 500, margin: "40px auto" }}>
-      <h2>Bienvenida a MiniRed</h2>
       <LoginForm />
-    </main>
   );
 }

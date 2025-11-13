@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser } from "../api/auth";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function RegisterForm() {
   const [form, setForm] = useState({
@@ -16,7 +15,6 @@ export default function RegisterForm() {
   const mutation = useMutation({
     mutationFn: registerUser,
     onSuccess: () => {
-      // ✅ Redirige al login después de registrarse correctamente
       setTimeout(() => navigate("/"), 1500);
     },
   });
@@ -27,49 +25,58 @@ export default function RegisterForm() {
   };
 
   return (
-    <main style={{ maxWidth: 500, margin: "40px auto" }}>
-    <h2>Bienvenida a MiniRed</h2>
-    <form onSubmit={handleSubmit}>
-      <h3>Registrate</h3>
-      <input
-        type="text"
-        placeholder="Usuario"
-        value={form.username}
-        onChange={(e) => setForm({ ...form, username: e.target.value })}
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={form.email}
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Contraseña"
-        value={form.password}
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-        required
-      />
+    <div className="login-container">
+      <div className="login-card">
+        <h3>Regístrate</h3>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Usuario"
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            className="login-input"
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="login-input"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            className="login-input"
+            required
+          />
 
-      <button type="submit" disabled={mutation.isPending}>
-        Registrarse
-      </button>
+          <button
+            type="submit"
+            disabled={mutation.isPending}
+            className="login-button"
+          >
+            {mutation.isPending ? "Registrando..." : "Registrarse"}
+          </button>
 
-      {mutation.isError && (
-        <p style={{ color: "red" }}>{mutation.error.message}</p>
-      )}
+          {mutation.isError && (
+            <p className="error">{mutation.error.message}</p>
+          )}
 
-      {mutation.isSuccess && (
-        <p style={{ color: "green" }}>
-          Registro completado con éxito. Redirigiendo al login...
+          {mutation.isSuccess && (
+            <p className="success">
+              Registro completado con éxito. Redirigiendo al login...
+            </p>
+          )}
+        </form>
+
+        <p className="login-register-text">
+          ¿Ya tienes cuenta? <Link to="/">Inicia sesión</Link>
         </p>
-      )}
-    </form>
-    <p>
-        ¿Ya tienes cuenta? <Link to="/">Inicia sesión</Link>
-    </p>
-    </main>
+      </div>
+    </div>
   );
 }
