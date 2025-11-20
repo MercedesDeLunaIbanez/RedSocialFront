@@ -1,32 +1,36 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
 
-
-/**
- * Componente que representa la barra de navegación
- * de la aplicación.
- * Muestra el nombre de la red, enlaces de navegación y
- * el usuario logueado con un botón para cerrar sesión.
- *
- * @returns {JSX.Element} Un JSX Element que representa la barra de navegación.
- */
 export default function Header() {
   const { user, logout } = useAuth();
+  const logoRef = useRef(null);
 
+  useEffect(() => {
+    if (!logoRef.current) return;
+
+    const letters = logoRef.current.querySelectorAll("span");
+
+    gsap.to(letters, {
+      color: "#fff",
+      textShadow: "0 0 8px #6c63ff, 0 0 15px #9c5eff",
+      duration: 1.2,
+      repeat: -1,
+      yoyo: true,
+      stagger: 0.08,
+      ease: "sine.inOut",
+    });
+  }, []);
 
   return (
-    <header
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "10px 20px",
-        borderBottom: "1px solid #ccc",
-      }}
-    >
-      {/* Izquierda: nombre de la red */}
-      <h2 style={{ margin: 0 }}>Nebula</h2>
-
+    <header>
+      {/* Izquierda: nombre de la red con animación */}
+      <h2 ref={logoRef} style={{ margin: 0, cursor: "default" }}>
+        {Array.from("Nebula").map((letter, index) => (
+          <span key={index}>{letter}</span>
+        ))}
+      </h2>
 
       {/* Centro: enlaces de navegación */}
       <nav style={{ display: "flex", gap: 20 }}>
@@ -35,12 +39,9 @@ export default function Header() {
         <Link to="/me">Mi perfil</Link>
       </nav>
 
-
       {/* Derecha: usuario logueado + botón logout */}
       <div>
-        <span style={{ marginRight: 10 }}>
-          {user?.username ?? "Usuario"}
-        </span>
+        <span style={{ marginRight: 10 }}>{user?.username ?? "Usuario"}</span>
         <button onClick={logout}>Cerrar sesión</button>
       </div>
     </header>
