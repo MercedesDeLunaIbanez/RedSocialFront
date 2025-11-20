@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import AllPublicationsPage from "./pages/AllPublicationsPage";
 import MyProfilePage from "./pages/MyProfilePage";
 import ProfilePage from "./pages/ProfilePage";
+import UserFollowList from "./components/UserListModal";
 
 
 export default function App() {

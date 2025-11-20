@@ -48,6 +48,7 @@ export default function GetPublication({ id, authorName, text, createDate }) {
     },
   });
 
+
   // Handler para el click
   const handleDelete = () => {
     if (window.confirm("¿Seguro que quieres borrar esta publicación?")) {
@@ -55,12 +56,22 @@ export default function GetPublication({ id, authorName, text, createDate }) {
     }
   };
 
+  const handleAuthorClick = () => {
+    // Comprueba si el autor de la publicación es el usuario logueado
+    if (user?.username === authorName) {
+      navigate("/me"); // Si es, navega a /me
+    } else {
+      navigate(`/profile/${authorName}`); // Si no, navega al perfil público
+  }
+};
+
+
   return (
     <div className="publication-card">
       <p className="publication-author">
         <strong
           className="author-link"
-          onClick={() => navigate(`/profile/${authorName}`)}
+          onClick={handleAuthorClick}
         >
           {authorName}
         </strong>{" "}
