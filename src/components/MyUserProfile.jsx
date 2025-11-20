@@ -1,36 +1,29 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../api/client";
 import { useAuth } from "../context/useAuth";
+import UserListModal from "./UserListModal"; // Importa el modal
 
-/**
- * Componente para mostrar el perfil del usuario autenticado.
- * 
- * Muestra la información del usuario y permite cambiar el nombre de usuario.
- * 
- * @returns {JSX.Element} Un formulario para cambiar el nombre de usuario.
- */
 export default function MyUserProfile() {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // estado para mostrar/ocultar formulario
-  const [showForm, setShowForm] = useState(false);
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
 
+  const [showForm, setShowForm] = useState(false);
   const [newUsername, setNewUsername] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState(null);
   const [redirectMessage, setRedirectMessage] = useState("");
 
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalUsers, setModalUsers] = useState([]);
+
   useEffect(() => {
-    /**
-     * Carga el perfil del usuario autenticado.
-     * Si no hay usuario autenticado, no hace nada.
-     * En caso de error, guarda el error en el estado `error`.
-     * En caso de éxito, guarda el perfil en el estado `profile`.
-     * Mientras carga, muestra un estado `loading` de verdadero.
-     */
     async function loadProfile() {
       if (!user?.username) {
         setLoading(false);
@@ -39,24 +32,26 @@ export default function MyUserProfile() {
       try {
         setLoading(true);
         setError(null);
-        const data = await apiFetch(`/users/public/${user.username}`);
-        setProfile(data);
+
+        const [profileData, followersData, followingData] = await Promise.all([
+          apiFetch(`/users/public/${user.username}`),
+          apiFetch("/users/followers"),
+          apiFetch("/users/following"),
+        ]);
+
+        setProfile(profileData);
+        setFollowers(followersData);
+        setFollowing(followingData);
       } catch (err) {
         setError(err);
       } finally {
         setLoading(false);
       }
     }
+
     loadProfile();
   }, [user.username]);
 
-  /**
-   * Función para manejar el envío del formulario de actualización de nombre de usuario.
-   * Previene la propagación del evento, y hace una petición PATCH a la API de
-   * autenticación con el nuevo nombre de usuario.
-   * Si la petición es exitosa, redirige al usuario al login.
-   * Si la petición falla, muestra un mensaje de error.
-   */
   const handleChangeUsername = async (e) => {
     e.preventDefault();
     if (!newUsername.trim()) {
@@ -76,9 +71,8 @@ export default function MyUserProfile() {
         method: "PATCH",
         body: JSON.stringify({ username: newUsername }),
       });
-      setRedirectMessage("Nombre de usuario actualizado. Serás redirigido al login...");
 
-      // función para redirigir al login
+      setRedirectMessage("Nombre de usuario actualizado. Serás redirigido al login...");
       setTimeout(() => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -90,9 +84,20 @@ export default function MyUserProfile() {
     }
   };
 
-  if (loading) return <p className="loading-text">Cargando perfil...</p>;
-  if (error) return <p className="error-text">Error: {error.message}</p>;
-  if (!profile) return <p className="error-text">No se encontró el perfil del usuario.</p>;
+  const openModal = (type) => {
+    if (type === "followers") {
+      setModalTitle("Seguidores");
+      setModalUsers(followers);
+    } else {
+      setModalTitle("Siguiendo");
+      setModalUsers(following);
+    }
+    setModalOpen(true);
+  };
+
+  if (loading) return <p>Cargando perfil...</p>;
+  if (error) return <p style={{ color: "red" }}>Error: {error.message}</p>;
+  if (!profile) return <p>No se encontró el perfil del usuario.</p>;
 
   return (
     <div className="profile-container">
@@ -100,9 +105,21 @@ export default function MyUserProfile() {
       <p className="profile-email">{profile.email}</p>
       <p className="profile-description">{profile.description || "Sin descripción disponible"}</p>
 
+      {/* Seguidores / Siguiendo */}
+      <div className="profile-follow-stats">
+        <div className="profile-follow-item" onClick={() => openModal("followers")}>
+          <strong>{followers.length}</strong>
+          <span className="follow-link">Seguidores</span>
+        </div>
+        <div className="profile-follow-item" onClick={() => openModal("following")}>
+          <strong>{following.length}</strong>
+          <span className="follow-link">Siguiendo</span>
+        </div>
+      </div>
+
       <hr className="profile-divider" />
 
-      {/* Botón para mostrar/ocultar formulario */}
+      {/* Formulario de cambio de nombre */}
       <button
         onClick={() => setShowForm(!showForm)}
         className="profile-toggle-button"
@@ -110,15 +127,11 @@ export default function MyUserProfile() {
         {showForm ? "Cancelar" : "Cambiar nombre de usuario"}
       </button>
 
-      {/* El formulario solo aparece si showForm es true */}
       {showForm && (
         <form onSubmit={handleChangeUsername} className="profile-form">
           <h3 className="profile-form-title">Cambiar nombre de usuario</h3>
-
           <div className="profile-form-group">
-            <label htmlFor="newUsername" className="profile-label">
-              Nuevo nombre de usuario:
-            </label>
+            <label htmlFor="newUsername" className="profile-label">Nuevo nombre de usuario:</label>
             <input
               id="newUsername"
               type="text"
@@ -129,14 +142,21 @@ export default function MyUserProfile() {
               disabled={isUpdating}
             />
           </div>
-
-          <button type="submit" disabled={isUpdating} className="profile-submit-button">
+          <button type="submit" className="profile-submit-button" disabled={isUpdating}>
             {isUpdating ? "Actualizando..." : "Actualizar nombre"}
           </button>
-
           {updateError && <p className="error-text">{updateError}</p>}
           {redirectMessage && <p className="success-text">{redirectMessage}</p>}
         </form>
+      )}
+
+      {/* Modal de usuarios */}
+      {modalOpen && (
+        <UserListModal
+          title={modalTitle}
+          users={modalUsers}
+          onClose={() => setModalOpen(false)}
+        />
       )}
     </div>
   );

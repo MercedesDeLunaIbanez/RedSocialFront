@@ -1,34 +1,32 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
+import UserListModal from "./UserListModal";
 
-/**
- * Componente que muestra el perfil del usuario con el nombre proporcionado.
- * La información del perfil se carga desde la API y se muestra en una caja
- * con estilos de diseño.
- * Si el perfil no existe, se muestra un mensaje "No se encontró el
- * Perfil del usuario.".
- * Si ocurre un error, se muestra un mensaje de error en rojo.
- * La información se actualiza automáticamente cuando se carga el perfil.
- * @returns {JSX.Element} Un componente que muestra el perfil del usuario.
- */
 export default function UserProfile() {
-  const { name } = useParams(); // toma el nombre de la URL
+  const { name } = useParams();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalUsers, setModalUsers] = useState([]);
+
   useEffect(() => {
-    /**
-     * Carga el perfil del usuario con el nombre proporcionado.
-     * Hace una petición GET a la API y guarda el resultado en el estado `profile`.
-     * Si ocurre un error, guarda el error en el estado `error`.
-     * Mientras carga, muestra un estado `loading` de verdadero.
-     */
     async function loadProfile() {
       try {
-        const data = await apiFetch(`/users/public/${name}`);
-        setProfile(data);
+        const [profileData, followersData, followingData] = await Promise.all([
+          apiFetch(`/users/public/${name}`),
+          apiFetch (`/users/public/followers/${name}`),
+          apiFetch(`/users/public/following/${name}`),
+        ]);
+        setProfile(profileData);
+        setFollowers(followersData);
+        setFollowing(followingData);
       } catch (err) {
         setError(err);
       } finally {
@@ -37,6 +35,17 @@ export default function UserProfile() {
     }
     loadProfile();
   }, [name]);
+
+  const openModal = (type) => {
+    if (type === "followers") {
+      setModalTitle("Seguidores");
+      setModalUsers(followers);
+    } else {
+      setModalTitle("Siguiendo");
+      setModalUsers(following);
+    }
+    setModalOpen(true);
+  };
 
   if (loading) return <p className="loading-text">Cargando perfil...</p>;
   if (error) return <p className="error-text">Error: {error.message}</p>;
@@ -47,6 +56,27 @@ export default function UserProfile() {
       <h2 className="profile-username">{profile.username}</h2>
       <p className="profile-email">{profile.email}</p>
       <p className="profile-description">{profile.description || "Sin descripción disponible"}</p>
+
+      {/* Seguidores / Siguiendo */}
+      <div className="profile-follow-stats">
+        <div className="profile-follow-item" onClick={() => openModal("followers")}>
+          <strong>{followers.length}</strong>
+          <span className="follow-link">Seguidores</span>
+        </div>
+        <div className="profile-follow-item" onClick={() => openModal("following")}>
+          <strong>{following.length}</strong>
+          <span className="follow-link">Siguiendo</span>
+        </div>
+      </div>
+
+      {/* Modal de usuarios */}
+      {modalOpen && (
+        <UserListModal
+          title={modalTitle}
+          users={modalUsers}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
