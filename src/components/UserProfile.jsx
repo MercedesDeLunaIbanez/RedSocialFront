@@ -2,81 +2,130 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import UserListModal from "./UserListModal";
+import { useAuth } from "../context/useAuth";
 
 export default function UserProfile() {
+  const { user: loggedInUser } = useAuth();
   const { name } = useParams();
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [followers, setFollowers] = useState([]);
-  const [following, setFollowing] = useState([]);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalUsers, setModalUsers] = useState([]);
+  const [followersList, setFollowersList] = useState([]);
+  const [followingList, setFollowingList] = useState([]);
+
+  const [listToShow, setListToShow] = useState(null);
 
   useEffect(() => {
     async function loadProfile() {
       try {
+        setLoading(true);
+        setError(null);
+
+        const profilePromise = apiFetch(`/users/public/${name}`);
+        const followersPromise = apiFetch(`/users/public/followers/${name}`);
+        const followingPromise = apiFetch(`/users/public/following/${name}`);
+
         const [profileData, followersData, followingData] = await Promise.all([
-          apiFetch(`/users/public/${name}`),
-          apiFetch (`/users/public/followers/${name}`),
-          apiFetch(`/users/public/following/${name}`),
+          profilePromise,
+          followersPromise,
+          followingPromise,
         ]);
+
         setProfile(profileData);
-        setFollowers(followersData);
-        setFollowing(followingData);
+
+        setFollowersList(followersData);
+        setFollowingList(followingData);
+
+        setFollowersCount(followersData.length);
+        setFollowingCount(followingData.length);
+
+        setIsFollowing(followersData.some(u => u.username === loggedInUser?.username));
       } catch (err) {
         setError(err);
       } finally {
         setLoading(false);
       }
     }
-    loadProfile();
-  }, [name]);
 
-  const openModal = (type) => {
-    if (type === "followers") {
-      setModalTitle("Seguidores");
-      setModalUsers(followers);
-    } else {
-      setModalTitle("Siguiendo");
-      setModalUsers(following);
+    loadProfile();
+  }, [name, loggedInUser]);
+
+  async function handleFollow() {
+    try {
+      await apiFetch(`/users/follow/${name}`, { method: "POST" });
+      setIsFollowing(true);
+      setFollowersCount(prev => prev + 1);
+    } catch (err) {
+      console.error("Error al seguir:", err);
     }
-    setModalOpen(true);
-  };
+  }
+
+  async function handleUnfollow() {
+    try {
+      await apiFetch(`/users/unfollow/${name}`, { method: "DELETE" });
+      setIsFollowing(false);
+      setFollowersCount(prev => (prev > 0 ? prev - 1 : 0));
+    } catch (err) {
+      console.error("Error al dejar de seguir:", err);
+    }
+  }
 
   if (loading) return <p className="loading-text">Cargando perfil...</p>;
   if (error) return <p className="error-text">Error: {error.message}</p>;
   if (!profile) return <p className="error-text">No se encontró el perfil del usuario.</p>;
 
-  return (
-    <div className="profile-card">
-      <h2 className="profile-username">{profile.username}</h2>
-      <p className="profile-email">{profile.email}</p>
-      <p className="profile-description">{profile.description || "Sin descripción disponible"}</p>
+  const listData = listToShow === 'followers' ? followersList : followingList;
+  const listTitle = listToShow === 'followers' ? 'Seguidores' : 'Siguiendo';
 
-      {/* Seguidores / Siguiendo */}
-      <div className="profile-follow-stats">
-        <div className="profile-follow-item" onClick={() => openModal("followers")}>
-          <strong>{followers.length}</strong>
-          <span className="follow-link">Seguidores</span>
-        </div>
-        <div className="profile-follow-item" onClick={() => openModal("following")}>
-          <strong>{following.length}</strong>
-          <span className="follow-link">Siguiendo</span>
+  return (
+    <>
+      <div className="profile-card">
+        <h2 className="profile-username">{profile.username}</h2>
+        <p className="profile-email">{profile.email}</p>
+        <p className="profile-description">{profile.description || "Sin descripción disponible"}</p>
+
+        {loggedInUser?.username !== name && (
+          <div className="profile-follow-action">
+            <button
+              className={`profile-toggle-button ${isFollowing ? "unfollow" : ""}`}
+              onClick={isFollowing ? handleUnfollow : handleFollow}
+            >
+              {isFollowing ? "Dejar de seguir" : "Seguir"}
+            </button>
+          </div>
+        )}
+
+        <div className="profile-follow-stats">
+          <div
+            className="profile-follow-item"
+            onClick={() => setListToShow('followers')}
+          >
+            <strong>{followersCount}</strong>
+            <span>Seguidores</span>
+          </div>
+          <div
+            className="profile-follow-item"
+            onClick={() => setListToShow('following')}
+          >
+            <strong>{followingCount}</strong>
+            <span>Siguiendo</span>
+          </div>
         </div>
       </div>
 
-      {/* Modal de usuarios */}
-      {modalOpen && (
+      {listToShow && (
         <UserListModal
-          title={modalTitle}
-          users={modalUsers}
-          onClose={() => setModalOpen(false)}
+          title={listTitle}
+          users={listData}
+          onClose={() => setListToShow(null)}
         />
       )}
-    </div>
+    </>
   );
 }

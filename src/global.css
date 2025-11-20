@@ -547,3 +547,42 @@ nav a:hover {
   color: var(--nebula-muted);
 }
 
+/* ===============================
+   🌌 Botón seguir / dejar de seguir
+   =============================== */
+.follow-button {
+  padding: 8px 16px;
+  background-color: var(--nebula-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.follow-button:hover:not(:disabled) {
+  background-color: var(--nebula-hover);
+  transform: scale(1.05);
+}
+
+.follow-button.unfollow {
+  background-color: var(--nebula-danger);
+}
+
+.follow-button.unfollow:hover:not(:disabled) {
+  background-color: var(--nebula-danger-hover);
+  transform: scale(1.05);
+}
+
+.follow-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Para centrar el botón debajo del perfil */
+.profile-follow-action {
+  margin-top: 20px;
+  text-align: center;
+}
+
