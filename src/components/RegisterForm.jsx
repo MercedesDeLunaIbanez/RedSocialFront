@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser } from "../api/auth";
 import { useNavigate, Link } from "react-router-dom";
+import LoginLogo from "../components/LoginLogo";
 
 export default function RegisterForm() {
   const [form, setForm] = useState({
@@ -26,8 +27,14 @@ export default function RegisterForm() {
 
   return (
     <div className="login-container">
+      {/* Logo animado */}
+        <LoginLogo />
       <div className="login-card">
-        <h3>Regístrate</h3>
+        {/* Subtítulo */}
+        <h3 style={{ textAlign: "center", marginBottom: "20px", color: "var(--nebula-text)" }}>
+          Regístrate
+        </h3>
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
