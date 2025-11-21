@@ -38,11 +38,20 @@ export default function PublicationList() {
        
       )}
 
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={prevPage} disabled={page === 0}>
+      <div className="pagination">
+        <button
+          className="pagination-button"
+          onClick={prevPage}
+          disabled={page === 0}
+        >
           ← Anterior
         </button>
-        <button onClick={nextPage} disabled={page >= totalPages - 1} style={{ marginLeft: "10px" }}>
+
+        <button
+          className="pagination-button"
+          onClick={nextPage}
+          disabled={page >= totalPages - 1}
+        >
           Siguiente →
         </button>
       </div>

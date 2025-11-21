@@ -256,6 +256,10 @@ nav a:hover {
   background: var(--nebula-card);
   box-shadow: 0 0 15px rgba(108, 99, 255, 0.2);
   margin-bottom: 25px;
+
+  /* 🔥 ESTADO INICIAL PARA GSAP */
+  opacity: 0;
+  transform: translateY(20px);
 }
 
 .publication-author {
