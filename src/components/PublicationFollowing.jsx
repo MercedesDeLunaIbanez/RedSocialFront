@@ -1,54 +1,71 @@
-import { usePagination } from "../hooks/usePagination";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { apiFetch } from "../api/client";
 import GetPublication from "./GetPublication";
+import { useEffect, useRef } from "react";
 
-
-/**
- * Muestra una lista de publicaciones de los usuario a los que sigue el usuario actual.
- * La lista se ordena por fecha de creación (más reciente primero).
- * La lista se puede paginar con botones "Anterior" y "Siguiente".
- * Si no hay publicaciones, se muestra un mensaje "No hay publicaciones disponibles.".
- * Si ocurre un error, se muestra un mensaje de error en rojo.
- * La lista se actualiza automáticamente cuando se crea o se borra una publicación.
- * @returns {JSX.Element} Un componente que muestra la lista de publicaciones del usuario actual que sigue.
- */
 export default function PublicationFollowing() {
-  const { items, page, totalPages, isLoading, isError, error, nextPage, prevPage } =
-    usePagination("/publications/following", 5); // endpoint y tamaño de página
+  const loadMoreRef = useRef(null);
 
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error
+  } = useInfiniteQuery({
+    queryKey: ["publications-following"],
+    queryFn: async ({ pageParam = 0 }) => {
+      const result = await apiFetch(`/publications/following?page=${pageParam}&size=5`);
+      return {
+        content: result.content,
+        nextPage: result.page + 1,
+        totalPages: result.totalPages
+      };
+    },
+    getNextPageParam: (lastPage) =>
+      lastPage.nextPage < lastPage.totalPages ? lastPage.nextPage : undefined
+  });
+
+  useEffect(() => {
+    if (!hasNextPage) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) fetchNextPage();
+    });
+
+    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, fetchNextPage]);
 
   if (isLoading) return <p>Cargando publicaciones...</p>;
   if (isError) return <p style={{ color: "red" }}>Error: {error.message}</p>;
 
+  const allItems = data.pages.flatMap((p) => p.content);
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Publicaciones (página {page + 1} de {totalPages})</h2>
+      <h2>Publicaciones de seguidos</h2>
 
+      {allItems.length === 0 && <p>No hay publicaciones disponibles.</p>}
 
-      {items.length === 0 && <p>No hay publicaciones disponibles.</p>}
+      {allItems
+        .slice()
+        .sort((a, b) => new Date(b.createDate) - new Date(a.createDate))
+        .map((pub) => (
+          <GetPublication
+            key={pub.id}
+            authorName={pub.username}
+            text={pub.text}
+            createDate={pub.createDate}
+          />
+        ))}
 
+      <div ref={loadMoreRef} style={{ height: 40 }} />
 
-      {items
-      .slice() // hacemos copia del array
-      .sort((a, b) => new Date(b.createDate) - new Date(a.createDate)) // más reciente primero
-      .map((pub) => (
-        <GetPublication
-          key={pub.id}
-          authorName={pub.username}
-          text={pub.text}
-          createDate={pub.createDate}
-        />
-      ))}
-
-
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={prevPage} disabled={page === 0}>
-          ← Anterior
-        </button>
-        <button onClick={nextPage} disabled={page >= totalPages - 1} style={{ marginLeft: "10px" }}>
-          Siguiente →
-        </button>
-      </div>
+      {isFetchingNextPage && <p>Cargando más...</p>}
+      {!hasNextPage && <p>No hay más publicaciones.</p>}
     </div>
   );
 }
