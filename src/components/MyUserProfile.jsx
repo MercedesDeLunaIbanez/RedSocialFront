@@ -67,13 +67,23 @@ export default function MyUserProfile() {
       <p className="profile-description">{profile.description || "Sin descripción disponible"}</p>
 
       <div className="profile-follow-stats">
-        <div className="profile-follow-item">
+
+        {/* --- Seguidores (clic en número + texto + área entera) --- */}
+        <div
+          className="profile-follow-item follow-link"
+          onClick={() => setShowFollowersModal(true)}
+        >
           <strong>{followers.length}</strong>
-          <span className="follow-link" onClick={() => setShowFollowersModal(true)}>Seguidores</span>
+          <span>Seguidores</span>
         </div>
-        <div className="profile-follow-item">
+
+        {/* --- Siguiendo (clic en número + texto + área entera) --- */}
+        <div
+          className="profile-follow-item follow-link"
+          onClick={() => setShowFollowingModal(true)}
+        >
           <strong>{following.length}</strong>
-          <span className="follow-link" onClick={() => setShowFollowingModal(true)}>Siguiendo</span>
+          <span>Siguiendo</span>
         </div>
       </div>
 
