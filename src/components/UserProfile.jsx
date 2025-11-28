@@ -2,26 +2,40 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import UserListModal from "./UserListModal";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../hooks/useAuth";
 
+/**
+ * Perfil público de un usuario.
+ * Carga sus datos, permite seguir/dejar de seguir y muestra modales de seguidores.
+ *
+ * @returns {JSX.Element} Tarjeta de perfil con acciones y modales.
+ */
 export default function UserProfile() {
   const { user: loggedInUser } = useAuth();
   const { name } = useParams();
 
+  // Estados de carga y error
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Estados originales para listas y modales
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
 
+  // Estados para listas
   const [followersList, setFollowersList] = useState([]);
   const [followingList, setFollowingList] = useState([]);
 
+  // Estados para el modal
   const [listToShow, setListToShow] = useState(null);
 
   useEffect(() => {
+    /**
+     * Carga el perfil y listas de seguidores/seguidos.
+     * Normaliza los contadores y marca si el usuario actual sigue al perfil.
+     */
     async function loadProfile() {
       try {
         setLoading(true);
@@ -38,14 +52,13 @@ export default function UserProfile() {
         ]);
 
         setProfile(profileData);
-
         setFollowersList(followersData);
         setFollowingList(followingData);
-
         setFollowersCount(followersData.length);
         setFollowingCount(followingData.length);
-
-        setIsFollowing(followersData.some(u => u.username === loggedInUser?.username));
+        setIsFollowing(
+          followersData.some((u) => u.username === loggedInUser?.username)
+        );
       } catch (err) {
         setError(err);
       } finally {
@@ -56,32 +69,44 @@ export default function UserProfile() {
     loadProfile();
   }, [name, loggedInUser]);
 
+  /**
+   * Sigue al usuario mostrado y actualiza contadores locales.
+   *
+   * @returns {Promise<void>} Promesa resuelta tras la petición.
+   */
   async function handleFollow() {
     try {
       await apiFetch(`/users/follow/${name}`, { method: "POST" });
       setIsFollowing(true);
-      setFollowersCount(prev => prev + 1);
+      setFollowersCount((prev) => prev + 1);
     } catch (err) {
       console.error("Error al seguir:", err);
     }
   }
 
+  /**
+   * Deja de seguir al usuario mostrado y actualiza contadores locales.
+   *
+   * @returns {Promise<void>} Promesa resuelta tras la petición.
+   */
   async function handleUnfollow() {
     try {
       await apiFetch(`/users/unfollow/${name}`, { method: "DELETE" });
       setIsFollowing(false);
-      setFollowersCount(prev => (prev > 0 ? prev - 1 : 0));
+      setFollowersCount((prev) => (prev > 0 ? prev - 1 : 0));
     } catch (err) {
       console.error("Error al dejar de seguir:", err);
     }
   }
 
+
   if (loading) return <p className="loading-text">Cargando perfil...</p>;
   if (error) return <p className="error-text">Error: {error.message}</p>;
   if (!profile) return <p className="error-text">No se encontró el perfil del usuario.</p>;
 
-  const listData = listToShow === 'followers' ? followersList : followingList;
-  const listTitle = listToShow === 'followers' ? 'Seguidores' : 'Siguiendo';
+  // Mostrar la lista de seguidores o seguidos
+  const listData = listToShow === "followers" ? followersList : followingList;
+  const listTitle = listToShow === "followers" ? "Seguidores" : "Siguiendo";
 
   return (
     <>
@@ -104,14 +129,14 @@ export default function UserProfile() {
         <div className="profile-follow-stats">
           <div
             className="profile-follow-item"
-            onClick={() => setListToShow('followers')}
+            onClick={() => setListToShow("followers")}
           >
             <strong>{followersCount}</strong>
             <span>Seguidores</span>
           </div>
           <div
             className="profile-follow-item"
-            onClick={() => setListToShow('following')}
+            onClick={() => setListToShow("following")}
           >
             <strong>{followingCount}</strong>
             <span>Siguiendo</span>

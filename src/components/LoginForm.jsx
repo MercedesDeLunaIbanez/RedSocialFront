@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { loginUser } from "../api/auth";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../hooks/useAuth";
 import LoginLogo from "./LoginLogo";
 
 /**
@@ -39,6 +39,14 @@ export default function LoginForm() {
 
   const mutation = useMutation({
     mutationFn: loginUser,
+  /**
+   * Función que se ejecuta cuando la mutación de login es exitosa.
+   * Recibe los datos del usuario autenticado y los pasa a la función
+   * de login del contexto de autenticación.
+   * @param {object} data - Datos del usuario autenticado.
+   * @property {string} data.access_token - El token JWT del usuario autenticado.
+   * @property {string} data.username - El nombre de usuario del usuario autenticado.
+   */
     onSuccess: (data) => {
       login(data.access_token, { username: data.username });
     },

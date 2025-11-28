@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../hooks/useAuth";
 import { apiFetch } from "../api/client";
 
 /**
@@ -37,14 +37,35 @@ export default function CreatePublication() {
   });
 
   const mutation = useMutation({
+  /**
+   * Función que se llama cuando se lanza la mutación.
+   * Crea una nueva publicación en la API con el texto proporcionado.
+   * Se utiliza fetch con el método POST para crear la publicación.
+   * @param {CreatePublicationValues} values - Valores validados del formulario.
+   * @returns {Promise<void>} Promesa que resuelve cuando se completa la creación.
+   */
     mutationFn: async ({ text }) =>
-      apiFetch("/publications", {
+      apiFetch("/publications/", {
         method: "POST",
         body: JSON.stringify({ text }),
       }),
+
+      
+  /**
+   * Se llama cuando se completa la creación de una publicación con éxito.
+   * Invalida todas las queries que contengan "/publications" en su queryKey, para que se refresquen automáticamente.
+   */
     onSuccess: () => {
       reset();
       queryClient.invalidateQueries({
+  /**
+   * Función que determina si una query debe ser invalidada.
+   * Se considera que una query debe ser invalidada si su queryKey es un array,
+   * el primer elemento de ese array es una cadena, y esa cadena contiene
+   * la subcadena "publications".
+   * @param {Query} query - La query que se va a evaluar.
+   * @returns {boolean} True si la query debe ser invalidada, false en caso contrario.
+   */
         predicate: (query) =>
           Array.isArray(query.queryKey) &&
           typeof query.queryKey[0] === "string" &&
@@ -64,6 +85,8 @@ export default function CreatePublication() {
     await mutation.mutateAsync(values);
   };
 
+
+  // Determina si el formulario debe estar deshabilitado
   const isDisabled = useMemo(
     () => !user || isSubmitting || mutation.isPending,
     [user, isSubmitting, mutation.isPending],

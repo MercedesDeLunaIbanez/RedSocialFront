@@ -1,7 +1,5 @@
-// src/components/UserListModal.jsx
-import React from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../hooks/useAuth";
 
 /**
  * Componente modal reutilizable para mostrar una lista de usuarios.
@@ -15,6 +13,11 @@ import { useAuth } from "../context/useAuth";
 export default function UserListModal({ title, users, onClose }) {
   const { user: loggedInUser } = useAuth();
 
+  /**
+   * Evita que el click dentro del contenido cierre el modal.
+   *
+   * @param {React.MouseEvent} e - Evento de click del contenedor interno.
+   */
   const handleModalContentClick = (e) => e.stopPropagation();
 
   return (

@@ -41,6 +41,10 @@ export default function RegisterForm() {
 
   const mutation = useMutation({
     mutationFn: registerUser,
+  /**
+   * Se llama cuando se completa el registro de un usuario con éxito.
+   * Invalida el formulario y redirige a la pantalla de login.
+   */
     onSuccess: () => {
       reset();
       navigate("/");
@@ -57,6 +61,7 @@ export default function RegisterForm() {
     await mutation.mutateAsync(values);
   };
 
+  // Comprueba si el formulario esta siendo enviado o si hay una mutación pendiente.
   const isDisabled = useMemo(
     () => isSubmitting || mutation.isPending,
     [isSubmitting, mutation.isPending],

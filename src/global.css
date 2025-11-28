@@ -1,5 +1,5 @@
 /* ===============================
-   🌌 Reset básico y tipografía
+   Reset básico y tipografía
    =============================== */
 * {
   margin: 0;
@@ -37,7 +37,7 @@ body {
 }
 
 /* ===============================
-   🌌 Tipografía y enlaces
+   Tipografía y enlaces
    =============================== */
 h1, h2, h3, h4 {
   color: var(--nebula-text);
@@ -57,7 +57,7 @@ a:hover {
 }
 
 /* ===============================
-   🌌 Botones e inputs generales
+   Botones e inputs generales
    =============================== */
 button {
   background: var(--nebula-primary);
@@ -99,7 +99,7 @@ input:focus, textarea:focus {
 }
 
 /* ===============================
-   🌌 Formularios
+   Formularios
    =============================== */
 form {
   display: flex;
@@ -139,7 +139,7 @@ p.success {
 
 
 /* ===============================
-   🌌 Header y navegación
+   Header y navegación
    =============================== */
 header {
   background: rgba(12, 16, 40, 0.9);
@@ -169,7 +169,7 @@ nav a:hover {
 }
 
 /* ===============================
-   🌌 Animaciones
+   Animaciones
    =============================== */
 .fade-in {
   animation: fadeIn 0.6s ease-in-out;
@@ -181,7 +181,7 @@ nav a:hover {
 }
 
 /* ===============================
-   🌌 Login / Registro
+   Login / Registro
    =============================== */
 .login-container {
   display: flex;
@@ -262,7 +262,7 @@ nav a:hover {
 
 
 /* ===============================
-   🌌 Publicaciones
+   Publicaciones
    =============================== */
 .publication-card {
   padding: 15px;
@@ -270,8 +270,7 @@ nav a:hover {
   background: var(--nebula-card);
   box-shadow: 0 0 15px rgba(108, 99, 255, 0.2);
   margin-bottom: 25px;
-
-  /* 🔥 ESTADO INICIAL PARA GSAP */
+  /* ESTADO INICIAL PARA GSAP */
   opacity: 0;
   transform: translateY(20px);
 }
@@ -318,7 +317,7 @@ nav a:hover {
 }
 
 /* ===============================
-   🌌 Crear publicación
+   Crear publicación
    =============================== */
 .create-publication-card {
   max-width: 600px;
@@ -367,7 +366,7 @@ nav a:hover {
 }
 
 /* ===============================
-   🌌 Perfil de usuario
+   Perfil de usuario
    =============================== */
 .profile-container,
 .profile-card {
@@ -457,7 +456,7 @@ nav a:hover {
 }
 
 /* ===============================
-   🌌 Paginación
+   Paginación
    =============================== */
 .pagination {
   margin-top: 20px;
@@ -516,7 +515,7 @@ nav a:hover {
 }
 
 /* ===============================
-   🌌 Modal de lista de usuarios
+   Modal de lista de usuarios
    =============================== */
 .userlist-modal-backdrop {
   position: fixed;
@@ -587,7 +586,7 @@ nav a:hover {
 }
 
 /* ===============================
-   🌌 Botón seguir / dejar de seguir
+   Botón seguir / dejar de seguir
    =============================== */
 .follow-button {
   padding: 8px 16px;
