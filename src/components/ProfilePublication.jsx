@@ -4,6 +4,11 @@ import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import GetPublication from "./GetPublication";
 
+/**
+ * Muestra las publicaciones de un usuario concreto con scroll infinito.
+ *
+ * @returns {JSX.Element} Contenedor con las publicaciones públicas del perfil.
+ */
 export default function ProfilePublication() {
   const { name } = useParams();
   const loadMoreRef = useRef(null);
@@ -15,33 +20,40 @@ export default function ProfilePublication() {
     isFetchingNextPage,
     isLoading,
     isError,
-    error
+    error,
   } = useInfiniteQuery({
     queryKey: ["publications-profile", name],
+    /**
+     * Obtiene una página de publicaciones del usuario.
+     *
+     * @param {{ pageParam?: number }} params - Parámetros de paginación de React Query.
+     * @returns {Promise<{content: Array, pageIndex: number, totalPages: number}>} Datos normalizados de la página.
+     */
     queryFn: async ({ pageParam = 0 }) => {
       const result = await apiFetch(
         `/publications/public/${name}?page=${pageParam}&size=5&sort=createDate,desc`
       );
 
-      // Normalizamos nombres de paginación según la API
-      const pageIndex =
-        result.page ?? result.number ?? 0;
-      const totalPages =
-        result.totalPages ?? result.total_pages ?? 1;
+      const pageIndex = result.page ?? result.number ?? 0;
+      const totalPages = result.totalPages ?? result.total_pages ?? 1;
       const content = Array.isArray(result.content)
         ? result.content
         : result.items ?? [];
 
       return { content, pageIndex, totalPages };
     },
-    getNextPageParam: (lastPage) => {
-      return lastPage.pageIndex + 1 < lastPage.totalPages
+    /**
+     * Calcula la siguiente página a pedir, si existe.
+     *
+     * @param {{ pageIndex: number, totalPages: number }} lastPage - Última página recibida.
+     * @returns {number|undefined} Índice de la siguiente página o undefined si no hay más.
+     */
+    getNextPageParam: (lastPage) =>
+      lastPage.pageIndex + 1 < lastPage.totalPages
         ? lastPage.pageIndex + 1
-        : undefined;
-    }
+        : undefined,
   });
 
-  // IntersectionObserver para scroll infinito
   useEffect(() => {
     if (!hasNextPage) return;
 
@@ -61,7 +73,6 @@ export default function ProfilePublication() {
   if (isLoading) return <p className="loading-text">Cargando publicaciones...</p>;
   if (isError) return <p className="error-text">Error: {error.message}</p>;
 
-  // Todas las publicaciones en orden descendente por fecha
   const allItems = data?.pages.flatMap((p) => p.content) ?? [];
 
   return (
@@ -82,7 +93,6 @@ export default function ProfilePublication() {
         />
       ))}
 
-      {/* Marcador invisible para cargar más publicaciones */}
       <div ref={loadMoreRef} style={{ height: 40 }} />
 
       {isFetchingNextPage && <p className="loading-text">Cargando más...</p>}

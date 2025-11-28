@@ -3,6 +3,13 @@ import GetPublication from "./GetPublication";
 import { apiFetch } from "../api/client";
 import { useEffect, useRef } from "react";
 
+/**
+ * Lista de publicaciones con scroll infinito.
+ * Obtiene entradas paginadas de la API y las concatena en el cliente.
+ * Usa un marcador invisible para disparar la carga de la siguiente página.
+ *
+ * @returns {JSX.Element} Contenedor con publicaciones públicas.
+ */
 export default function PublicationList() {
   const loadMoreRef = useRef(null);
 
@@ -16,12 +23,17 @@ export default function PublicationList() {
     error,
   } = useInfiniteQuery({
     queryKey: ["publications"],
-    // pageParam = 0 (primera página)
+    /**
+     * Recupera una página de publicaciones.
+     *
+     * @param {{ pageParam?: number }} params - Paginación que entrega React Query.
+     * @returns {Promise<{content: Array, pageIndex: number, totalPages: number|undefined}>} Datos normalizados de la página.
+     */
     queryFn: async ({ pageParam = 0 }) => {
-      // pedimos explícitamente orden por fecha descendente (si tu backend lo soporta)
-      const result = await apiFetch(`/publications/?page=${pageParam}&size=5&sort=createDate,desc`);
+      const result = await apiFetch(
+        `/publications/?page=${pageParam}&size=5&sort=createDate,desc`
+      );
 
-      // Normaliza el índice de página y totalPages por si la API usa nombres distintos
       const pageIndex =
         result.page ??
         result.number ??
@@ -35,22 +47,31 @@ export default function PublicationList() {
         (typeof result.totalPages === "number" ? result.totalPages : undefined);
 
       return {
-        content: Array.isArray(result.content) ? result.content : result.items ?? [],
+        content: Array.isArray(result.content)
+          ? result.content
+          : result.items ?? [],
         pageIndex,
         totalPages,
       };
     },
+    /**
+     * Calcula el índice de la siguiente página en base a la respuesta previa.
+     *
+     * @param {{ pageIndex: number, totalPages?: number, content: Array }} lastPage - Última página recibida.
+     * @returns {number|undefined} Índice de la siguiente página o undefined si no hay más.
+     */
     getNextPageParam: (lastPage) => {
-      // Si totalPages no se proporciona, permitimos fetch hasta que el servidor devuelva vacío
       if (typeof lastPage.totalPages === "number") {
-        return lastPage.pageIndex + 1 < lastPage.totalPages ? lastPage.pageIndex + 1 : undefined;
+        return lastPage.pageIndex + 1 < lastPage.totalPages
+          ? lastPage.pageIndex + 1
+          : undefined;
       }
-      // fallback: si la última página vino con contenido, devolvemos next index
-      return lastPage.content && lastPage.content.length > 0 ? lastPage.pageIndex + 1 : undefined;
+      return lastPage.content && lastPage.content.length > 0
+        ? lastPage.pageIndex + 1
+        : undefined;
     },
   });
 
-  // === SCROLL INFINITO (IntersectionObserver) ===
   useEffect(() => {
     if (!hasNextPage) return;
 
@@ -60,7 +81,7 @@ export default function PublicationList() {
           fetchNextPage();
         }
       },
-      { threshold: 0.5 } // más fiable que 1
+      { threshold: 0.5 }
     );
 
     const el = loadMoreRef.current;
@@ -72,7 +93,6 @@ export default function PublicationList() {
   if (isLoading) return <p>Cargando publicaciones...</p>;
   if (isError) return <p style={{ color: "red" }}>Error: {error.message}</p>;
 
-  // Junta todas las páginas en el orden que llegaron (no reordenes en cliente)
   const allItems = data?.pages.flatMap((p) => p.content) ?? [];
 
   return (
