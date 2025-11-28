@@ -1,8 +1,16 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../hooks/useAuth";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
+/**
+ * Componente de cabecera de la app.
+ * Muestra el nombre de la red "Nebula" con animación,
+ * los enlaces de navegación y el botón de cierre de sesión
+ * del usuario logueado.
+ * 
+ * @returns {JSX.Element} Componente de cabecera de la app.
+ */
 export default function Header() {
   const { user, logout } = useAuth();
   const logoRef = useRef(null);

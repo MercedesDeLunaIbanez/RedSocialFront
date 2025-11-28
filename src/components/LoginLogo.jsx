@@ -2,13 +2,17 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 
+/**
+ * Componente que muestra el nombre de la red "Nebula" con animación.
+ * 
+ * @returns {JSX.Element} Componente de nombre de la red con animación.
+ */
+
 export default function LoginLogo() {
   const logoRef = useRef(null);
 
-
   useEffect(() => {
     const letters = logoRef.current.querySelectorAll("span");
-
 
     // Animación de entrada
     gsap.fromTo(
@@ -25,7 +29,13 @@ export default function LoginLogo() {
     );
 
 
-    // Animación de resplandor continuo
+  /**
+   * Animación de la letra "N" en el nombre de la red "Nebula".
+   * Se encarga de hacer una animación de texto con efecto de neón.
+   * La animación se repite indefinidamente.
+   * 
+   * @param {Element[]} letters - Elementos span que contienen las letras de la red "Nebula".
+   */
     function animateNeon() {
       gsap.to(letters, {
         textShadow: "0 0 10px #6c63ff, 0 0 20px #9c5eff, 0 0 30px #6cffb8",
@@ -43,7 +53,7 @@ export default function LoginLogo() {
   return (
     <h1 className="login-logo" ref={logoRef}>
       {Array.from("Nebula").map((letter, index) => (
-        <span key={index}>{letter}</span>
+        <span key={index}>{letter}</span> // Muestra cada letra con un span
       ))}
     </h1>
   );
