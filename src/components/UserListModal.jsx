@@ -2,13 +2,14 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 /**
- * Componente modal reutilizable para mostrar una lista de usuarios.
- * Redirige a /me si el usuario es el logueado.
+ * Modal reutilizable que muestra una lista de usuarios enlazables.
+ * Redirige a /me si el usuario listado coincide con el logueado.
  *
- * @param {object} props
- * @param {string} props.title - Título del modal (ej: "Seguidores")
- * @param {Array} props.users - Array de objetos de usuario (deben tener .username)
- * @param {Function} props.onClose - Función para cerrar el modal
+ * @param {object} props - Propiedades del componente.
+ * @param {string} props.title - Titulo del modal (ej: "Seguidores").
+ * @param {Array<{username: string}>} props.users - Lista de usuarios a mostrar.
+ * @param {Function} props.onClose - Funcion para cerrar el modal.
+ * @returns {JSX.Element} Ventana modal con enlaces de usuario.
  */
 export default function UserListModal({ title, users, onClose }) {
   const { user: loggedInUser } = useAuth();

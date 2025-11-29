@@ -1,6 +1,4 @@
-/* ===============================
-   Reset básico y tipografía
-   =============================== */
+/* Reset basico y tipografia */
 * {
   margin: 0;
   padding: 0;
@@ -36,9 +34,7 @@ body {
   background: radial-gradient(circle at top left, #0b0f29, #060816 80%);
 }
 
-/* ===============================
-   Tipografía y enlaces
-   =============================== */
+/* Tipografia y enlaces */
 h1, h2, h3, h4 {
   color: var(--nebula-text);
   font-weight: 600;
@@ -56,9 +52,7 @@ a:hover {
   color: var(--nebula-hover);
 }
 
-/* ===============================
-   Botones e inputs generales
-   =============================== */
+/* Botones e inputs generales */
 button {
   background: var(--nebula-primary);
   color: white;
@@ -98,9 +92,7 @@ input:focus, textarea:focus {
   background: #181c40;
 }
 
-/* ===============================
-   Formularios
-   =============================== */
+/* Formularios */
 form {
   display: flex;
   flex-direction: column;
@@ -137,10 +129,7 @@ p.success {
   font-size: 0.8rem;
 }
 
-
-/* ===============================
-   Header y navegación
-   =============================== */
+/* Header y navegacion */
 header {
   background: rgba(12, 16, 40, 0.9);
   backdrop-filter: blur(10px);
@@ -168,9 +157,7 @@ nav a:hover {
   color: var(--nebula-accent);
 }
 
-/* ===============================
-   Animaciones
-   =============================== */
+/* Animaciones */
 .fade-in {
   animation: fadeIn 0.6s ease-in-out;
 }
@@ -180,9 +167,7 @@ nav a:hover {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===============================
-   Login / Registro
-   =============================== */
+/* Login / Registro */
 .login-container {
   display: flex;
   flex-direction: column;
@@ -254,23 +239,19 @@ nav a:hover {
   letter-spacing: 3px;
 }
 
-
 .login-logo span {
   display: inline-block;
   transition: all 0.3s ease;
 }
 
-
-/* ===============================
-   Publicaciones
-   =============================== */
+/* Publicaciones */
 .publication-card {
   padding: 15px;
   border-radius: 12px;
   background: var(--nebula-card);
   box-shadow: 0 0 15px rgba(108, 99, 255, 0.2);
   margin-bottom: 25px;
-  /* ESTADO INICIAL PARA GSAP */
+  /* Estado inicial para GSAP */
   opacity: 0;
   transform: translateY(20px);
 }
@@ -316,9 +297,7 @@ nav a:hover {
   cursor: not-allowed;
 }
 
-/* ===============================
-   Crear publicación
-   =============================== */
+/* Crear publicacion */
 .create-publication-card {
   max-width: 600px;
   margin: 20px auto;
@@ -365,9 +344,7 @@ nav a:hover {
   transform: scale(1.03);
 }
 
-/* ===============================
-   Perfil de usuario
-   =============================== */
+/* Perfil de usuario */
 .profile-container,
 .profile-card {
   max-width: 600px;
@@ -455,9 +432,7 @@ nav a:hover {
   cursor: not-allowed;
 }
 
-/* ===============================
-   Paginación
-   =============================== */
+/* Paginacion */
 .pagination {
   margin-top: 20px;
   display: flex;
@@ -485,7 +460,7 @@ nav a:hover {
   cursor: not-allowed;
 }
 
-/* Sección de seguidores/siguiendo */
+/* Seccion de seguidores/siguiendo */
 .profile-follow-stats {
   display: flex;
   justify-content: space-evenly;
@@ -514,9 +489,7 @@ nav a:hover {
   list-style: none;
 }
 
-/* ===============================
-   Modal de lista de usuarios
-   =============================== */
+/* Modal de lista de usuarios */
 .userlist-modal-backdrop {
   position: fixed;
   top: 0;
@@ -585,9 +558,7 @@ nav a:hover {
   color: var(--nebula-muted);
 }
 
-/* ===============================
-   Botón seguir / dejar de seguir
-   =============================== */
+/* Boton seguir / dejar de seguir */
 .follow-button {
   padding: 8px 16px;
   background-color: var(--nebula-primary);
@@ -618,9 +589,8 @@ nav a:hover {
   cursor: not-allowed;
 }
 
-/* Para centrar el botón debajo del perfil */
+/* Para centrar el boton debajo del perfil */
 .profile-follow-action {
   margin-top: 20px;
   text-align: center;
 }
-

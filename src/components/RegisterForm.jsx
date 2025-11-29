@@ -6,18 +6,18 @@ import { registerUser } from "../api/auth";
 import LoginLogo from "../components/LoginLogo";
 
 /**
- * Datos que se envían en el formulario de registro.
+ * Datos que se envian en el formulario de registro.
  * @typedef {Object} RegisterFormValues
  * @property {string} username - Nombre de usuario.
- * @property {string} email - Correo electrónico del usuario.
- * @property {string} password - Contraseña del usuario.
+ * @property {string} email - Correo electronico del usuario.
+ * @property {string} password - Contrasena del usuario.
  */
 
 /**
  * Formulario de registro de usuario.
  *
- * Utiliza React Hook Form para gestionar el estado y las reglas de validación
- * y lanza la mutación de alta de usuario contra la API. Tras un registro correcto
+ * Utiliza React Hook Form para gestionar el estado y las reglas de validacion
+ * y lanza la mutacion de alta de usuario contra la API. Tras un registro correcto
  * redirige a la pantalla de login.
  *
  * @returns {JSX.Element} Formulario de registro listo para usar.
@@ -41,10 +41,9 @@ export default function RegisterForm() {
 
   const mutation = useMutation({
     mutationFn: registerUser,
-  /**
-   * Se llama cuando se completa el registro de un usuario con éxito.
-   * Invalida el formulario y redirige a la pantalla de login.
-   */
+    /**
+     * Tras un alta correcta, limpia el formulario y redirige a login.
+     */
     onSuccess: () => {
       reset();
       navigate("/");
@@ -52,7 +51,7 @@ export default function RegisterForm() {
   });
 
   /**
-   * Envía el formulario de registro a la API.
+   * Envia el formulario de registro a la API.
    *
    * @param {RegisterFormValues} values - Valores validados del formulario.
    * @returns {Promise<void>} Promesa que resuelve cuando termina el registro.
@@ -61,7 +60,7 @@ export default function RegisterForm() {
     await mutation.mutateAsync(values);
   };
 
-  // Comprueba si el formulario esta siendo enviado o si hay una mutación pendiente.
+  // Comprueba si el formulario esta siendo enviado o si hay una mutacion pendiente.
   const isDisabled = useMemo(
     () => isSubmitting || mutation.isPending,
     [isSubmitting, mutation.isPending],
@@ -99,7 +98,7 @@ export default function RegisterForm() {
             <p className="field-error">{errors.username.message}</p>
           )}
 
-          <label htmlFor="email">Correo electrónico</label>
+          <label htmlFor="email">Correo electronico</label>
           <input
             id="email"
             type="email"
@@ -107,10 +106,10 @@ export default function RegisterForm() {
             placeholder="tucorreo@ejemplo.com"
             autoComplete="email"
             {...register("email", {
-              required: "El correo electrónico es obligatorio.",
+              required: "El correo electronico es obligatorio.",
               pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/u,
-                message: "Introduce un correo electrónico válido.",
+                value: /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/u,
+                message: "Introduce un correo electronico valido.",
               },
             })}
             disabled={isDisabled}
@@ -119,18 +118,18 @@ export default function RegisterForm() {
             <p className="field-error">{errors.email.message}</p>
           )}
 
-          <label htmlFor="password">Contraseña</label>
+          <label htmlFor="password">Contrasena</label>
           <input
             id="password"
             type="password"
             className="login-input"
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Minimo 6 caracteres"
             autoComplete="new-password"
             {...register("password", {
-              required: "La contraseña es obligatoria.",
+              required: "La contrasena es obligatoria.",
               minLength: {
                 value: 6,
-                message: "La contraseña debe tener al menos 6 caracteres.",
+                message: "La contrasena debe tener al menos 6 caracteres.",
               },
             })}
             disabled={isDisabled}
@@ -155,13 +154,13 @@ export default function RegisterForm() {
 
           {mutation.isSuccess && !mutation.isPending && (
             <p className="success">
-              Registro completado con éxito. Redirigiendo al login...
+              Registro completado con exito. Redirigiendo al login...
             </p>
           )}
         </form>
 
         <p className="login-register-text">
-          ¿Ya tienes cuenta? <Link to="/">Inicia sesión</Link>
+          Ya tienes cuenta? <Link to="/">Inicia sesion</Link>
         </p>
       </div>
     </div>

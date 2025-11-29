@@ -7,15 +7,16 @@ import "./global.css";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+// Registro unico del plugin de scroll para que las animaciones usen ScrollTrigger.
 gsap.registerPlugin(ScrollTrigger);
 
+// Cliente compartido de React Query para cache y gestion de peticiones.
 const queryClient = new QueryClient();
 
 /**
- * Renderiza el componente principal de la app.
- * @returns {JSX.Element} Componente principal de la app.
+ * Punto de entrada de la aplicacion.
+ * Envuelve la app con React Query y el provider de autenticacion antes de montar en el DOM.
  */
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

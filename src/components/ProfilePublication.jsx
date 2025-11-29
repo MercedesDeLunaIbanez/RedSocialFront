@@ -7,7 +7,7 @@ import GetPublication from "./GetPublication";
 /**
  * Muestra las publicaciones de un usuario concreto con scroll infinito.
  *
- * @returns {JSX.Element} Contenedor con las publicaciones públicas del perfil.
+ * @returns {JSX.Element} Contenedor con las publicaciones publicas del perfil.
  */
 export default function ProfilePublication() {
   const { name } = useParams();
@@ -24,10 +24,10 @@ export default function ProfilePublication() {
   } = useInfiniteQuery({
     queryKey: ["publications-profile", name],
     /**
-     * Obtiene una página de publicaciones del usuario.
+     * Obtiene una pagina de publicaciones del usuario.
      *
-     * @param {{ pageParam?: number }} params - Parámetros de paginación de React Query.
-     * @returns {Promise<{content: Array, pageIndex: number, totalPages: number}>} Datos normalizados de la página.
+     * @param {{ pageParam?: number }} params - Parametros de paginacion de React Query.
+     * @returns {{content: Array, pageIndex: number, totalPages: number}} Datos normalizados de la pagina.
      */
     queryFn: async ({ pageParam = 0 }) => {
       const result = await apiFetch(
@@ -43,10 +43,10 @@ export default function ProfilePublication() {
       return { content, pageIndex, totalPages };
     },
     /**
-     * Calcula la siguiente página a pedir, si existe.
+     * Calcula la siguiente pagina a pedir, si existe.
      *
-     * @param {{ pageIndex: number, totalPages: number }} lastPage - Última página recibida.
-     * @returns {number|undefined} Índice de la siguiente página o undefined si no hay más.
+     * @param {{ pageIndex: number, totalPages: number }} lastPage - Ultima pagina recibida.
+     * @returns {number|undefined} Indice de la siguiente pagina o undefined si no hay mas.
      */
     getNextPageParam: (lastPage) =>
       lastPage.pageIndex + 1 < lastPage.totalPages
@@ -95,8 +95,8 @@ export default function ProfilePublication() {
 
       <div ref={loadMoreRef} style={{ height: 40 }} />
 
-      {isFetchingNextPage && <p className="loading-text">Cargando más...</p>}
-      {!hasNextPage && <p className="loading-text">No hay más publicaciones</p>}
+      {isFetchingNextPage && <p className="loading-text">Cargando mas...</p>}
+      {!hasNextPage && <p className="loading-text">No hay mas publicaciones</p>}
     </div>
   );
 }
