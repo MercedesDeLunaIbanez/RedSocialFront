@@ -6,9 +6,9 @@ import { useEffect, useRef } from "react";
 /**
  * Lista de publicaciones con scroll infinito.
  * Obtiene entradas paginadas de la API y las concatena en el cliente.
- * Usa un marcador invisible para disparar la carga de la siguiente página.
+ * Usa un marcador invisible para disparar la carga de la siguiente pagina.
  *
- * @returns {JSX.Element} Contenedor con publicaciones públicas.
+ * @returns {JSX.Element} Contenedor con publicaciones publicas.
  */
 export default function PublicationList() {
   const loadMoreRef = useRef(null);
@@ -24,10 +24,10 @@ export default function PublicationList() {
   } = useInfiniteQuery({
     queryKey: ["publications"],
     /**
-     * Recupera una página de publicaciones.
+     * Recupera una pagina de publicaciones.
      *
-     * @param {{ pageParam?: number }} params - Paginación que entrega React Query.
-     * @returns {Promise<{content: Array, pageIndex: number, totalPages: number|undefined}>} Datos normalizados de la página.
+     * @param {{ pageParam?: number }} params - Paginacion que entrega React Query.
+     * @returns {{content: Array, pageIndex: number, totalPages: number|undefined}} Datos normalizados de la pagina.
      */
     queryFn: async ({ pageParam = 0 }) => {
       const result = await apiFetch(
@@ -55,10 +55,10 @@ export default function PublicationList() {
       };
     },
     /**
-     * Calcula el índice de la siguiente página en base a la respuesta previa.
+     * Calcula el indice de la siguiente pagina en base a la respuesta previa.
      *
-     * @param {{ pageIndex: number, totalPages?: number, content: Array }} lastPage - Última página recibida.
-     * @returns {number|undefined} Índice de la siguiente página o undefined si no hay más.
+     * @param {{ pageIndex: number, totalPages?: number, content: Array }} lastPage - Ultima pagina recibida.
+     * @returns {number|undefined} Indice de la siguiente pagina o undefined si no hay mas.
      */
     getNextPageParam: (lastPage) => {
       if (typeof lastPage.totalPages === "number") {
@@ -111,11 +111,11 @@ export default function PublicationList() {
         />
       ))}
 
-      {/* trigger invisible para cargar más */}
+      {/* trigger invisible para cargar mas */}
       <div ref={loadMoreRef} style={{ height: "40px" }} />
 
-      {isFetchingNextPage && <p>Cargando más...</p>}
-      {!hasNextPage && <p>No hay más publicaciones.</p>}
+      {isFetchingNextPage && <p>Cargando mas...</p>}
+      {!hasNextPage && <p>No hay mas publicaciones.</p>}
     </div>
   );
 }

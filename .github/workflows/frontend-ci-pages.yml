@@ -1,0 +1,55 @@
+name: CI Frontend + GitHub Pages - RedSocialFront
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+  pull_request:
+    branches: [ "develop", "main" ]
+
+jobs:
+  build-and-deploy:
+    name: Build frontend y despliegue en GitHub Pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      # Si más adelante tienes tests:
+      # - name: Ejecutar tests
+      #   run: npm test
+
+      - name: Build del proyecto
+        run: npm run build
+
+      - name: Comprimir carpeta dist en un zip
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "La carpeta dist no existe. Asegúrate de que npm run build genera dist/."
+            exit 1
+          fi
+          zip -r dist.zip dist
+
+      - name: Subir artefacto dist.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: redsocial-frontend-dist
+          path: dist.zip
+          if-no-files-found: error
+
+      - name: Desplegar en GitHub Pages (branch gh-pages)
+        if: github.ref == 'refs/heads/main'   # Solo despliega cuando el push es a main
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages

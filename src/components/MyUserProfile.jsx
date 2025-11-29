@@ -6,11 +6,10 @@ import UserListModal from "./UserListModal";
 /**
  * Componente para mostrar el perfil del usuario autenticado.
  *
- * Muestra información del usuario y sus seguidores/siguiendo.
- * Permite abrir un modal para ver las listas.
- * También permite cambiar el nombre de usuario.
+ * Muestra informacion del usuario y sus seguidores/siguiendo.
+ * Permite abrir un modal para ver las listas y cambiar el nombre de usuario.
  *
- * @returns {JSX.Element} Perfil del usuario con estadísticas, modal y formulario de actualización.
+ * @returns {JSX.Element} Perfil del usuario con estadisticas, modal y formulario de actualizacion.
  */
 export default function MyUserProfile() {
   const { user } = useAuth();
@@ -25,7 +24,7 @@ export default function MyUserProfile() {
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
 
-  // --- Estados añadidos para el formulario de cambio de username ---
+  // Estados para el formulario de cambio de username
   const [showForm, setShowForm] = useState(false);
   const [newUsername, setNewUsername] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
@@ -57,8 +56,8 @@ export default function MyUserProfile() {
         ]);
 
         setProfile(profileData);
-        setFollowers(followersData); // Usamos el estado original
-        setFollowing(followingData); // Usamos el estado original
+        setFollowers(followersData);
+        setFollowing(followingData);
       } catch (err) {
         setError(err);
       } finally {
@@ -68,18 +67,16 @@ export default function MyUserProfile() {
     loadProfile();
   }, [user.username]);
 
-  // --- Función añadida para manejar el cambio de username ---
   /**
    * Actualiza el nombre de usuario del usuario autenticado.
-   * Valida el formulario y verifica que el nuevo nombre de usuario no esté vacío y sea diferente al actual.
-   * Si hay un error, se muestra un mensaje de error.
-   * Si se actualiza correctamente, se muestra un mensaje de éxito y se redirige al login después de 2 segundos.
+   * Valida el formulario y evita cambios vacios o iguales al actual.
+   *
    * @param {Event} e - Evento del formulario.
    */
   const handleChangeUsername = async (e) => {
     e.preventDefault();
     if (!newUsername.trim()) {
-      setUpdateError("El nombre de usuario no puede estar vacío.");
+      setUpdateError("El nombre de usuario no puede estar vacio.");
       return;
     }
     if (newUsername === user.username) {
@@ -94,7 +91,7 @@ export default function MyUserProfile() {
         body: JSON.stringify({ username: newUsername }),
       });
       setRedirectMessage(
-        "Nombre de usuario actualizado. Serás redirigido al login..."
+        "Nombre de usuario actualizado. Seras redirigido al login..."
       );
       setTimeout(() => {
         localStorage.removeItem("token");
@@ -102,8 +99,16 @@ export default function MyUserProfile() {
         window.location.replace("/login");
       }, 2000);
     } catch (err) {
+      const rawMsg = typeof err?.message === "string" ? err.message : "";
+      const normalized = rawMsg
+        ? rawMsg.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        : "";
+      const msg =
+        normalized.includes("datos invalidos")
+          ? "Ese nombre de usuario ya esta en uso. Prueba con otro distinto."
+          : rawMsg;
       setUpdateError(
-        err.message || "Error al actualizar el nombre de usuario."
+        msg || "Error al actualizar el nombre de usuario."
       );
       setIsUpdating(false);
     }
@@ -112,20 +117,18 @@ export default function MyUserProfile() {
   if (loading) return <p className="loading-text">Cargando perfil...</p>;
   if (error) return <p className="error-text">Error: {error.message}</p>;
   if (!profile)
-    return <p className="error-text">No se encontró el perfil del usuario.</p>;
+    return <p className="error-text">No se encontro el perfil del usuario.</p>;
 
   return (
-    // Usamos un Fragmento <> para envolver la lógica del modal original
-    // y el 'profile-card'
     <>
       <div className="profile-card">
         <h2 className="profile-username">{profile.username}</h2>
         <p className="profile-email">{profile.email}</p>
         <p className="profile-description">
-          {profile.description || "Sin descripción disponible"}
+          {profile.description || "Sin descripcion disponible"}
         </p>
 
-        {/* --- Lógica original de seguidores/siguiendo --- */}
+        {/* Listados de seguidores/siguiendo */}
         <div className="profile-follow-stats">
           <div
             className="profile-follow-item follow-link"
@@ -143,7 +146,6 @@ export default function MyUserProfile() {
           </div>
         </div>
 
-        {/* --- JSX añadido para el formulario (con separador) --- */}
         <hr className="profile-divider" />
 
         <button
@@ -185,7 +187,7 @@ export default function MyUserProfile() {
         )}
       </div>
 
-      {/* --- Lógica original de modales (fuera del card) --- */}
+      {/* Modales de seguidores/siguiendo */}
       {showFollowersModal && (
         <UserListModal
           title="Seguidores"

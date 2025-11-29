@@ -8,10 +8,10 @@ import MyProfilePage from "./pages/MyProfilePage";
 import ProfilePage from "./pages/ProfilePage";
 
 /**
- * Enrutador principal de la aplicación.
- * Muestra rutas públicas o privadas según el estado de autenticación.
+ * Enrutador principal de la aplicacion.
+ * Muestra rutas publicas o privadas segun el estado de autenticacion.
  *
- * @returns {JSX.Element} Definición de rutas de la aplicación.
+ * @returns {JSX.Element} Definicion de rutas de la aplicacion.
  */
 export default function App() {
   const { isAuthenticated } = useAuth();
@@ -40,7 +40,7 @@ export default function App() {
 }
 
 /**
- * Pantalla pública de autenticación.
+ * Pantalla publica de autenticacion.
  * Muestra el formulario de login.
  *
  * @returns {JSX.Element} Vista de acceso.

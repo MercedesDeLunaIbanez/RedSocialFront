@@ -5,17 +5,16 @@ import { apiFetch } from "../api/client";
 import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 
-
 /**
- * Componente que renderiza una publicación.
- * Recibe como props el identificador de la publicación, el nombre del autor, el texto de la publicación y la fecha de creación.
- * Si el usuario autenticado es el dueño de la publicación, se muestra un botón para borrar la publicación.
- * La publicación se anima con GSAP cuando se hace scroll hasta ella.
- * @param {Object} props - Propiedades para renderizar la publicación.
- * @param {string} props.id - Identificador de la publicación.
- * @param {string} props.authorName - Nombre del autor de la publicación.
- * @param {string} props.text - Texto de la publicación.
- * @param {string} props.createDate - Fecha de creación de la publicación.
+ * Componente que renderiza una publicacion.
+ * Si el usuario autenticado es el duenio se muestra la opcion de borrar.
+ *
+ * @param {object} props - Propiedades para renderizar la publicacion.
+ * @param {string} props.id - Identificador de la publicacion.
+ * @param {string} props.authorName - Nombre del autor de la publicacion.
+ * @param {string} props.text - Texto de la publicacion.
+ * @param {string} props.createDate - Fecha de creacion de la publicacion.
+ * @returns {JSX.Element} Tarjeta de publicacion.
  */
 export default function GetPublication({ id, authorName, text, createDate }) {
   const { user } = useAuth();
@@ -24,67 +23,56 @@ export default function GetPublication({ id, authorName, text, createDate }) {
 
   const cardRef = useRef(null);
 
-  
   const deleteMutation = useMutation({
     /**
-     * Elimina la publicación con el identificador especificado.
-     * Se utiliza fetch con el método DELETE para borrar la publicación.
-     * @returns {Promise<void>} Promesa que resuelve cuando se completa la eliminación.
+     * Elimina la publicacion con el identificador especificado.
+     *
+     * @returns {Promise<void>} Promesa que resuelve cuando se completa la eliminacion.
      */
     mutationFn: async () => {
       await apiFetch(`/publications/${id}`, { method: "DELETE" });
     },
 
-    
     /**
-     * Se llama cuando se completa la eliminación de la publicación.
-     * Invalida todas las queries que contengan "/publications" en su queryKey, para que se refresquen automáticamente.
+     * Invalida queries de publicaciones para refrescar listados tras borrar.
      */
     onSuccess: () => {
       queryClient.invalidateQueries({
-        predicate: (query) => query.queryKey[0]?.includes("/publications"),
+        predicate: (query) => query.queryKey[0]?.includes("publication"),
       });
     },
 
-    
-  /**
-   * Se llama cuando ocurre un error al eliminar la publicación.
-   * Muestra un mensaje de alerta con el mensaje de error.
-   * @param {Error} error - Error que ocurrió al eliminar la publicación.
-   */
+    /**
+     * Muestra un error claro al eliminar la publicacion.
+     *
+     * @param {Error} error - Error al eliminar.
+     */
     onError: (error) => {
-      alert(`Error al borrar publicación: ${error.message}`);
+      alert(`Error al borrar publicacion: ${error.message}`);
     },
   });
 
-  
   /**
-   * Elimina la publicación actual si se confirma.
-   * Se muestra un diálogo de confirmación con el mensaje "¿Seguro que quieres borrar esta publicación?".
-   * Si se confirma, se llama a deleteMutation.mutate() para eliminar la publicación.
+   * Elimina la publicacion actual si el usuario confirma.
    */
   const handleDelete = () => {
-    if (window.confirm("¿Seguro que quieres borrar esta publicación?")) {
+    if (window.confirm("Seguro que quieres borrar esta publicacion?")) {
       deleteMutation.mutate();
     }
   };
 
-  
   /**
-   * Función que se llama cuando se hace click en el nombre del autor de la publicación.
-   * Redirige a la página de perfil del usuario autenticado si el nombre del autor coincide con el nombre del usuario autenticado.
-   * De lo contrario, redirige a la página de perfil del usuario cuyo nombre coincide con el nombre del autor.
+   * Navega al perfil adecuado segun el autor.
    */
   const handleAuthorClick = () => {
     if (user?.username === authorName) navigate("/me");
     else navigate(`/profile/${authorName}`);
   };
 
-  // --- ANIMACIÓN GSAP + ScrollTrigger + CLEANUP ---
+  // Animacion de entrada de la tarjeta con GSAP
   useEffect(() => {
     const el = cardRef.current;
 
-    // Animación de entrada
     gsap.to(el, {
       opacity: 1,
       y: 0,
@@ -97,7 +85,6 @@ export default function GetPublication({ id, authorName, text, createDate }) {
       }
     });
 
-    // Cleanup para evitar animaciones duplicadas
     return () => {
       gsap.killTweensOf(el);
     };
@@ -109,7 +96,7 @@ export default function GetPublication({ id, authorName, text, createDate }) {
         <strong className="author-link" onClick={handleAuthorClick}>
           {authorName}
         </strong>{" "}
-        — {new Date(createDate).toLocaleString("es-ES", { timeZone: "Europe/Madrid" })}
+        - {new Date(createDate).toLocaleString("es-ES", { timeZone: "Europe/Madrid" })}
       </p>
 
       <p className="publication-text">{text}</p>
@@ -120,7 +107,7 @@ export default function GetPublication({ id, authorName, text, createDate }) {
           disabled={deleteMutation.isPending}
           className="publication-delete-button"
         >
-          {deleteMutation.isPending ? "Borrando..." : "Borrar publicación"}
+          {deleteMutation.isPending ? "Borrando..." : "Borrar publicacion"}
         </button>
       )}
     </div>
