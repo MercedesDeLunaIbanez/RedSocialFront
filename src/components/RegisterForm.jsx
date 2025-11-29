@@ -98,7 +98,7 @@ export default function RegisterForm() {
             <p className="field-error">{errors.username.message}</p>
           )}
 
-          <label htmlFor="email">Correo electronico</label>
+          <label htmlFor="email">Correo electrónico</label>
           <input
             id="email"
             type="email"
@@ -108,7 +108,7 @@ export default function RegisterForm() {
             {...register("email", {
               required: "El correo electronico es obligatorio.",
               pattern: {
-                value: /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/u,
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/u,
                 message: "Introduce un correo electronico valido.",
               },
             })}
@@ -118,7 +118,7 @@ export default function RegisterForm() {
             <p className="field-error">{errors.email.message}</p>
           )}
 
-          <label htmlFor="password">Contrasena</label>
+          <label htmlFor="password">Contraseña</label>
           <input
             id="password"
             type="password"
