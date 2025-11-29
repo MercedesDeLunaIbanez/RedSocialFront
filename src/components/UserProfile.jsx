@@ -5,7 +5,7 @@ import UserListModal from "./UserListModal";
 import { useAuth } from "../hooks/useAuth";
 
 /**
- * Perfil público de un usuario.
+ * Perfil publico de un usuario.
  * Carga sus datos, permite seguir/dejar de seguir y muestra modales de seguidores.
  *
  * @returns {JSX.Element} Tarjeta de perfil con acciones y modales.
@@ -72,7 +72,7 @@ export default function UserProfile() {
   /**
    * Sigue al usuario mostrado y actualiza contadores locales.
    *
-   * @returns {Promise<void>} Promesa resuelta tras la petición.
+   * @returns {Promise<void>} Promesa resuelta tras la peticion.
    */
   async function handleFollow() {
     try {
@@ -87,7 +87,7 @@ export default function UserProfile() {
   /**
    * Deja de seguir al usuario mostrado y actualiza contadores locales.
    *
-   * @returns {Promise<void>} Promesa resuelta tras la petición.
+   * @returns {Promise<void>} Promesa resuelta tras la peticion.
    */
   async function handleUnfollow() {
     try {
@@ -99,10 +99,9 @@ export default function UserProfile() {
     }
   }
 
-
   if (loading) return <p className="loading-text">Cargando perfil...</p>;
   if (error) return <p className="error-text">Error: {error.message}</p>;
-  if (!profile) return <p className="error-text">No se encontró el perfil del usuario.</p>;
+  if (!profile) return <p className="error-text">No se encontro el perfil del usuario.</p>;
 
   // Mostrar la lista de seguidores o seguidos
   const listData = listToShow === "followers" ? followersList : followingList;
@@ -113,7 +112,7 @@ export default function UserProfile() {
       <div className="profile-card">
         <h2 className="profile-username">{profile.username}</h2>
         <p className="profile-email">{profile.email}</p>
-        <p className="profile-description">{profile.description || "Sin descripción disponible"}</p>
+        <p className="profile-description">{profile.description || "Sin descripcion disponible"}</p>
 
         {loggedInUser?.username !== name && (
           <div className="profile-follow-action">

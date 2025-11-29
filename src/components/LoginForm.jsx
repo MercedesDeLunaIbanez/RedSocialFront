@@ -7,18 +7,18 @@ import { useAuth } from "../hooks/useAuth";
 import LoginLogo from "./LoginLogo";
 
 /**
- * Datos que se envían en el formulario de login.
+ * Datos que se envian en el formulario de login.
  * @typedef {Object} LoginFormValues
  * @property {string} username - Nombre de usuario.
- * @property {string} password - Contraseña del usuario.
+ * @property {string} password - Contrasena del usuario.
  */
 
 /**
- * Formulario de inicio de sesión.
+ * Formulario de inicio de sesion.
  *
- * Gestiona el estado y la validación del formulario utilizando React Hook Form
- * y lanza la mutación de login contra la API. Muestra errores de validación de
- * campo y errores globales de la API manteniendo la cohesión visual con el diseño existente.
+ * Gestiona el estado y la validacion del formulario utilizando React Hook Form
+ * y lanza la mutacion de login contra la API. Muestra errores de validacion de
+ * campo y errores globales de la API manteniendo la cohesion visual con el diseno existente.
  *
  * @returns {JSX.Element} Formulario de login listo para usar.
  */
@@ -39,21 +39,18 @@ export default function LoginForm() {
 
   const mutation = useMutation({
     mutationFn: loginUser,
-  /**
-   * Función que se ejecuta cuando la mutación de login es exitosa.
-   * Recibe los datos del usuario autenticado y los pasa a la función
-   * de login del contexto de autenticación.
-   * @param {object} data - Datos del usuario autenticado.
-   * @property {string} data.access_token - El token JWT del usuario autenticado.
-   * @property {string} data.username - El nombre de usuario del usuario autenticado.
-   */
+    /**
+     * Procesa la respuesta correcta del login y almacena token y usuario.
+     *
+     * @param {{ access_token: string, username: string }} data - Datos devueltos por la API.
+     */
     onSuccess: (data) => {
       login(data.access_token, { username: data.username });
     },
   });
 
   /**
-   * Envía el formulario a la API.
+   * Envia el formulario a la API.
    *
    * @param {LoginFormValues} values - Valores validados del formulario.
    * @returns {Promise<void>} Promesa que resuelve cuando termina el login.
@@ -62,6 +59,7 @@ export default function LoginForm() {
     await mutation.mutateAsync(values);
   };
 
+  // Deshabilita el formulario durante el envio o mientras la mutacion esta pendiente.
   const isDisabled = useMemo(
     () => isSubmitting || mutation.isPending,
     [isSubmitting, mutation.isPending],
@@ -72,7 +70,7 @@ export default function LoginForm() {
       <LoginLogo />
 
       <div className="login-card">
-        <h3>Inicia sesión</h3>
+        <h3>Inicia sesion</h3>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <label htmlFor="username">Nombre de usuario</label>
@@ -99,18 +97,18 @@ export default function LoginForm() {
             <p className="field-error">{errors.username.message}</p>
           )}
 
-          <label htmlFor="password">Contraseña</label>
+          <label htmlFor="password">Contrasena</label>
           <input
             id="password"
             type="password"
             className="login-input"
-            placeholder="••••••••"
+            placeholder="********"
             autoComplete="current-password"
             {...register("password", {
-              required: "La contraseña es obligatoria.",
+              required: "La contrasena es obligatoria.",
               minLength: {
                 value: 6,
-                message: "La contraseña debe tener al menos 6 caracteres.",
+                message: "La contrasena debe tener al menos 6 caracteres.",
               },
             })}
             disabled={isDisabled}
@@ -129,13 +127,13 @@ export default function LoginForm() {
 
           {mutation.isError && (
             <p className="error-text">
-              {mutation.error?.message ?? "No se ha podido iniciar sesión."}
+              {mutation.error?.message ?? "No se ha podido iniciar sesion."}
             </p>
           )}
         </form>
 
         <p className="login-register-text">
-          ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
+          No tienes cuenta? <Link to="/register">Registrate aqui</Link>
         </p>
       </div>
     </div>

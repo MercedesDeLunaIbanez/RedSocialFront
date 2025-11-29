@@ -5,18 +5,18 @@ import { useAuth } from "../hooks/useAuth";
 import { apiFetch } from "../api/client";
 
 /**
- * Datos que se envían al crear una publicación.
+ * Datos que se envian al crear una publicacion.
  * @typedef {Object} CreatePublicationValues
- * @property {string} text - Contenido de la publicación.
+ * @property {string} text - Contenido de la publicacion.
  */
 
 /**
- * Formulario para crear una nueva publicación.
+ * Formulario para crear una nueva publicacion.
  *
- * Utiliza React Hook Form para gestionar el estado y la validación del textarea,
- * y React Query para lanzar la mutación de creación contra la API. Tras una
- * creación correcta invalida las queries relacionadas con publicaciones para
- * refrescar automáticamente los listados.
+ * Utiliza React Hook Form para gestionar el estado y la validacion del textarea,
+ * y React Query para lanzar la mutacion de creacion contra la API. Tras una
+ * creacion correcta invalida las queries relacionadas con publicaciones para
+ * refrescar automaticamente los listados.
  *
  * @returns {JSX.Element} Un formulario estilado para crear publicaciones.
  */
@@ -37,35 +37,24 @@ export default function CreatePublication() {
   });
 
   const mutation = useMutation({
-  /**
-   * Función que se llama cuando se lanza la mutación.
-   * Crea una nueva publicación en la API con el texto proporcionado.
-   * Se utiliza fetch con el método POST para crear la publicación.
-   * @param {CreatePublicationValues} values - Valores validados del formulario.
-   * @returns {Promise<void>} Promesa que resuelve cuando se completa la creación.
-   */
+    /**
+     * Crea una nueva publicacion en la API con el texto proporcionado.
+     *
+     * @param {CreatePublicationValues} values - Valores validados del formulario.
+     * @returns {Promise<void>} Promesa que resuelve cuando se completa la creacion.
+     */
     mutationFn: async ({ text }) =>
       apiFetch("/publications/", {
         method: "POST",
         body: JSON.stringify({ text }),
       }),
 
-      
-  /**
-   * Se llama cuando se completa la creación de una publicación con éxito.
-   * Invalida todas las queries que contengan "/publications" en su queryKey, para que se refresquen automáticamente.
-   */
+    /**
+     * Tras crear, resetea el formulario e invalida queries de publicaciones.
+     */
     onSuccess: () => {
       reset();
       queryClient.invalidateQueries({
-  /**
-   * Función que determina si una query debe ser invalidada.
-   * Se considera que una query debe ser invalidada si su queryKey es un array,
-   * el primer elemento de ese array es una cadena, y esa cadena contiene
-   * la subcadena "publications".
-   * @param {Query} query - La query que se va a evaluar.
-   * @returns {boolean} True si la query debe ser invalidada, false en caso contrario.
-   */
         predicate: (query) =>
           Array.isArray(query.queryKey) &&
           typeof query.queryKey[0] === "string" &&
@@ -75,16 +64,15 @@ export default function CreatePublication() {
   });
 
   /**
-   * Envía el texto de la publicación a la API.
+   * Envia el texto de la publicacion a la API.
    *
    * @param {CreatePublicationValues} values - Valores validados del formulario.
-   * @returns {Promise<void>} Promesa que resuelve cuando se completa la creación.
+   * @returns {Promise<void>} Promesa que resuelve cuando se completa la creacion.
    */
   const onSubmit = async (values) => {
     if (!user) return;
     await mutation.mutateAsync(values);
   };
-
 
   // Determina si el formulario debe estar deshabilitado
   const isDisabled = useMemo(
@@ -94,26 +82,26 @@ export default function CreatePublication() {
 
   return (
     <section className="create-publication-card">
-      <h3 className="create-publication-title">Crea una nueva publicación</h3>
+      <h3 className="create-publication-title">Crea una nueva publicacion</h3>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <textarea
           className="create-publication-textarea"
           placeholder={
             user
-              ? "¿Qué está pasando?"
-              : "Inicia sesión para poder publicar."
+              ? "Que esta pasando?"
+              : "Inicia sesion para poder publicar."
           }
           rows={3}
           {...register("text", {
-            required: user ? "El texto de la publicación es obligatorio." : false,
+            required: user ? "El texto de la publicacion es obligatorio." : false,
             minLength: {
               value: 3,
-              message: "La publicación debe tener al menos 3 caracteres.",
+              message: "La publicacion debe tener al menos 3 caracteres.",
             },
             maxLength: {
               value: 280,
-              message: "La publicación no puede superar los 280 caracteres.",
+              message: "La publicacion no puede superar los 280 caracteres.",
             },
           })}
           disabled={isDisabled}
@@ -133,7 +121,7 @@ export default function CreatePublication() {
 
       {mutation.isError && (
         <p className="error-text">
-          {mutation.error?.message ?? "No se ha podido crear la publicación."}
+          {mutation.error?.message ?? "No se ha podido crear la publicacion."}
         </p>
       )}
     </section>

@@ -4,13 +4,10 @@ import GetPublication from "./GetPublication";
 import { useEffect, useRef } from "react";
 
 /**
- * Muestra las publicaciones de los usuarios que se está siguiendo.
- * La lista de publicaciones se puede paginar con botones "Anterior" y "Siguiente".
- * Si no hay publicaciones, se muestra un mensaje "No hay publicaciones disponibles.".
- * Si ocurre un error, se muestra un mensaje de error en rojo.
- * La lista se actualiza automáticamente cuando se crea o se borra una publicación.
- * @returns {JSX.Element} Un componente que muestra la lista de publicaciones de los usuarios que se está siguiendo.
- * */
+ * Muestra las publicaciones de los usuarios que se siguen, con scroll infinito.
+ *
+ * @returns {JSX.Element} Listado de publicaciones de seguidos.
+ */
 export default function PublicationFollowing() {
   const loadMoreRef = useRef(null);
 
@@ -24,13 +21,12 @@ export default function PublicationFollowing() {
     error
   } = useInfiniteQuery({
     queryKey: ["publications-following"],
-/**
- * Función que se utiliza para obtener las publicaciones de los usuarios que se está siguiendo de forma paginada.
- * La función devuelve un objeto con tres propiedades: content, nextPage y totalPages.
- * content es un array con las publicaciones de la página actual.
- * nextPage es el índice de la página siguiente.
- * totalPages es el número total de páginas que se pueden obtener.
- */
+    /**
+     * Recupera las publicaciones de usuarios seguidos de forma paginada.
+     *
+     * @param {{ pageParam?: number }} params - Parametros de React Query.
+     * @returns {{content: Array, nextPage: number, totalPages: number}} Pagina normalizada.
+     */
     queryFn: async ({ pageParam = 0 }) => {
       const result = await apiFetch(`/publications/following?page=${pageParam}&size=5`);
       return {
@@ -40,15 +36,16 @@ export default function PublicationFollowing() {
       };
     },
     /**
-     * Determina qué índice de página cargar a continuación.
+     * Determina que pagina cargar a continuacion.
      *
-     * @param {{ nextPage: number, totalPages: number }} lastPage - Última página recibida.
-     * @returns {number|undefined} Índice siguiente o undefined si no hay más datos.
+     * @param {{ nextPage: number, totalPages: number }} lastPage - Ultima pagina recibida.
+     * @returns {number|undefined} Siguiente pagina o undefined si no hay mas datos.
      */
     getNextPageParam: (lastPage) =>
       lastPage.nextPage < lastPage.totalPages ? lastPage.nextPage : undefined
   });
 
+  /* Dispara la carga de la siguiente pagina si existe */
   useEffect(() => {
     if (!hasNextPage) return;
 
@@ -85,8 +82,8 @@ export default function PublicationFollowing() {
 
       <div ref={loadMoreRef} style={{ height: 40 }} />
 
-      {isFetchingNextPage && <p>Cargando más...</p>}
-      {!hasNextPage && <p>No hay más publicaciones.</p>}
+      {isFetchingNextPage && <p>Cargando mas...</p>}
+      {!hasNextPage && <p>No hay mas publicaciones.</p>}
     </div>
   );
 }

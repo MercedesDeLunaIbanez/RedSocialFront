@@ -2,17 +2,10 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 /**
- * Hook para obtener el contexto de autenticación.
- * Devuelve un objeto con las propiedades:
- * - `token`: el token JWT del usuario autenticado.
- * - `user`: el objeto del usuario autenticado.
- * - `login`: función para iniciar sesión con un token y un objeto de usuario.
- * - `logout`: función para cerrar sesión.
- * - `isAuthenticated`: booleano que indica si el usuario está autenticado.
- * 
- * @returns {object} Un objeto con las propiedades mencionadas arriba.
+ * Hook de conveniencia para leer el contexto de autenticacion.
+ *
+ * @returns {{token: string|null, user: object|null, login: Function, logout: Function, isAuthenticated: boolean}} Datos y acciones de autenticacion.
  */
 export function useAuth() {
   return useContext(AuthContext);
 }
-
