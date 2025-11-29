@@ -38,7 +38,7 @@ export default function GetPublication({ id, authorName, text, createDate }) {
      */
     onSuccess: () => {
       queryClient.invalidateQueries({
-        predicate: (query) => query.queryKey[0]?.includes("/publications"),
+        predicate: (query) => query.queryKey[0]?.includes("publication"),
       });
     },
 

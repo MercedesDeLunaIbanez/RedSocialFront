@@ -99,8 +99,16 @@ export default function MyUserProfile() {
         window.location.replace("/login");
       }, 2000);
     } catch (err) {
+      const rawMsg = typeof err?.message === "string" ? err.message : "";
+      const normalized = rawMsg
+        ? rawMsg.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        : "";
+      const msg =
+        normalized.includes("datos invalidos")
+          ? "Ese nombre de usuario ya esta en uso. Prueba con otro distinto."
+          : rawMsg;
       setUpdateError(
-        err.message || "Error al actualizar el nombre de usuario."
+        msg || "Error al actualizar el nombre de usuario."
       );
       setIsUpdating(false);
     }
