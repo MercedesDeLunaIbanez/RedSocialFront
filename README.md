@@ -40,19 +40,19 @@
 ## Guía de instalación
 ```bash
 # 1) Clonar el repositorio
-git clone <url-del-repo>
+git clone https://github.com/MercedesDeLunaIbanez/RedSocialFront.git
 cd RedSocialFront
 
 # 2) Instalar dependencias
 npm install
 
-# 3) Variables (si aplican)
-# Por defecto la API apunta a http://localhost:8080/api/v1 en src/api/client.js
-# Ajusta baseURL si tu backend usa otro host/puerto.
+# 3) Variables 
+http://localhost:8080/api/v1
+
 
 # 4) Ejecutar en desarrollo
 npm run dev
-# Abrir la URL que muestre Vite (ej. http://localhost:5173)
+Abrir http://localhost:5173
 ```
 
 ## Guía de uso

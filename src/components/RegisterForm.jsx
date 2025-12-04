@@ -109,7 +109,7 @@ export default function RegisterForm() {
               required: "El correo electronico es obligatorio.",
               pattern: {
                 value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/u,
-                message: "Introduce un correo electronico valido.",
+                message: "Introduce un correo electrónico válido.",
               },
             })}
             disabled={isDisabled}
@@ -123,13 +123,13 @@ export default function RegisterForm() {
             id="password"
             type="password"
             className="login-input"
-            placeholder="Minimo 6 caracteres"
+            placeholder="Mínimo 6 caracteres"
             autoComplete="new-password"
             {...register("password", {
-              required: "La contrasena es obligatoria.",
+              required: "La contraseña es obligatoria.",
               minLength: {
                 value: 6,
-                message: "La contrasena debe tener al menos 6 caracteres.",
+                message: "La contraseña debe tener al menos 6 caracteres.",
               },
             })}
             disabled={isDisabled}
@@ -160,7 +160,7 @@ export default function RegisterForm() {
         </form>
 
         <p className="login-register-text">
-          Ya tienes cuenta? <Link to="/">Inicia sesion</Link>
+          ¿Ya tienes cuenta? <Link to="/">Inicia sesión</Link>
         </p>
       </div>
     </div>
