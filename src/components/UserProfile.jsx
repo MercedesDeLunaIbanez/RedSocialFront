@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import UserListModal from "./UserListModal";
@@ -31,14 +31,14 @@ export default function UserProfile() {
   // Estados para el modal
   const [listToShow, setListToShow] = useState(null);
 
-  useEffect(() => {
-    /**
-     * Carga el perfil y listas de seguidores/seguidos.
-     * Normaliza los contadores y marca si el usuario actual sigue al perfil.
-     */
-    async function loadProfile() {
+  /**
+   * Carga el perfil y listas de seguidores/seguidos.
+   * Normaliza los contadores y marca si el usuario actual sigue al perfil.
+   */
+  const loadProfile = useCallback(
+    async (showSpinner = true) => {
       try {
-        setLoading(true);
+        if (showSpinner) setLoading(true);
         setError(null);
 
         const profilePromise = apiFetch(`/users/public/${name}`);
@@ -62,12 +62,15 @@ export default function UserProfile() {
       } catch (err) {
         setError(err);
       } finally {
-        setLoading(false);
+        if (showSpinner) setLoading(false);
       }
-    }
+    },
+    [name, loggedInUser?.username]
+  );
 
+  useEffect(() => {
     loadProfile();
-  }, [name, loggedInUser]);
+  }, [loadProfile]);
 
   /**
    * Sigue al usuario mostrado y actualiza contadores locales.
@@ -78,7 +81,13 @@ export default function UserProfile() {
     try {
       await apiFetch(`/users/follow/${name}`, { method: "POST" });
       setIsFollowing(true);
+      setFollowersList((prev) => {
+        if (prev.some((u) => u.username === loggedInUser?.username)) return prev;
+        return [...prev, { username: loggedInUser?.username }];
+      });
       setFollowersCount((prev) => prev + 1);
+      // Refrescamos la informacion del perfil para mantener ambas listas al dia.
+      loadProfile(false);
     } catch (err) {
       console.error("Error al seguir:", err);
     }
@@ -93,7 +102,12 @@ export default function UserProfile() {
     try {
       await apiFetch(`/users/unfollow/${name}`, { method: "DELETE" });
       setIsFollowing(false);
+      setFollowersList((prev) =>
+        prev.filter((u) => u.username !== loggedInUser?.username)
+      );
       setFollowersCount((prev) => (prev > 0 ? prev - 1 : 0));
+      // Refrescamos la informacion del perfil para mantener ambas listas al dia.
+      loadProfile(false);
     } catch (err) {
       console.error("Error al dejar de seguir:", err);
     }
