@@ -13,8 +13,11 @@ export async function apiFetch(url, options = {}) {
   // 1) Recuperamos el token guardado (si el usuario esta logueado).
   const token = localStorage.getItem("token");
 
-  // 2) Definimos la base de la API. Asi si cambia el puerto o la URL, solo se modifica aqui.
-  const baseURL = "http://localhost:8080/api/v1";
+  // 2) Definimos la base de la API a partir de variables de entorno de Vite.
+  //    - En local: .env.development -> VITE_API_BASE_URL
+  //    - En GitHub Pages: la pipeline le inyecta otra URL diferente
+  const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
+
 
   // 3) Construimos la configuracion final de fetch.
   //    Incluye:
